@@ -1,0 +1,11 @@
+pfam_scan.pl
+Bio/Pfam/Active_site/as_search.pm
+Bio/Pfam/Scan/PfamScan.pm
+Bio/Pfam/Scan/Seq.pm
+Bio/Pfam/HMM/HMM.pm
+Bio/Pfam/HMM/HMMIO.pm
+Bio/Pfam/HMM/HMMMatch.pm
+Bio/Pfam/HMM/HMMResults.pm
+Bio/Pfam/HMM/HMMResultsIO.pm
+Bio/Pfam/HMM/HMMSequence.pm
+Bio/Pfam/HMM/HMMUnit.pm

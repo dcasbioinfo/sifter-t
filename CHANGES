@@ -1,0 +1,43 @@
+Release 1.1
+-----------
+
+# New Features
+
+    * Added support for species tree generation.
+    * Added support for reconciliation process.
+    * Improved Input File checking.
+    * Improved species TaxID checking.
+
+# Changes
+
+    * Now Sifter-T requires Notung 2.6+ (for reconciliation)
+    * New database requirements from NCBI Taxonomy's "taxdump.tar.gz" file:
+      - "delnodes.dmp"
+      - "merged.dmp"
+
+# Bug Fixes
+
+    * Database: Solved the invalid TaxID problem at "gene_sp.list" file.
+    * Test set: The "Sifter2.0" have 2 versions of the "hundred_families"
+        dataset. One for the paper and one for the website. We have included 
+        both versions on the test set.
+
+
+Release 1.0
+-----------
+
+    * Initial release of Sifter-T.
+
+# New Features
+
+    * None.
+
+# Changes
+
+    * None.
+
+# Bug Fixes
+
+    * None.
+
+

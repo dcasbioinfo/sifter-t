@@ -1,0 +1,564 @@
+Introduction
+============
+
+Sifter-T is a easy to use framework for "Sifter2.0" large scale automation. 
+
+"Sifter2.0" is a tool for probabilistic functional annotation, wich relies on 
+phylogenetic structure for Gene Ontology annotations propagation. 
+
+Sifter-T expands "Sifter2.0" usability, scalability and functionality:
+    - Accepts nucleotide and aminoacid as inputs
+    - Multithreading
+    - Easy to use
+
+If you use Sifter-T in work contributing to a sientific publication, we ask 
+that you cite our application note:
+
+Almeida-e-Silva D.C. and Vêncio R.Z.N. 2013. Sifter-T: A scalable framework for
+phylogenomic probabilistic protein domain functional annotation. 
+Bioinformatics 2013
+
+
+Source Code Repository
+======================
+
+The primary home page for Sifter-T is at:
+
+    http://labpib.fmrp.usp.br/~methods/sifter-t/
+
+The Sifter-T source code is version-controlled using "Git", and the "Sifter-T 
+Git repository <https://github.com/dcasbioinfo/sifter-t.git>" can be cloned by 
+running:
+
+    $ git clone git://github.com/dcasbioinfo/sifter-t.git
+
+
+Licence
+=======
+
+Sifter-T is available under Creative Commons Attribution Non-Commercial Licence.
+
+    This licence permits users to use, reproduce, disseminate or display the 
+    article provided that the author is attributed as the original creator and
+    that the reuse is restricted to non-commercial purposes.
+
+    See the full licence in LICENSE file.
+
+
+Change History
+==============
+
+The major changes (new features and bug fixes) in the development history of 
+Sifter-T can be found in CHANGES file.
+
+
+Bugs
+====
+
+We try to deliver a robust package, however, bugs inevitably pop up. If you are
+having problems that might be caused by a bug please do report the bug. 
+
+  You can send a bug report to the authors:
+
+     dcas.bioinfo@gmail.com
+     rvencio@usp.br
+
+  In the bug report, please let us know:
+
+  1. Which operating system and hardware you are using
+  2. Python, Biopython, Dendropy, Notung, FastTree, mafft, java, PfamScan, 
+     hmmer, perl and bioperl versions
+  3. Databases release versions
+  4. Example code that breaks
+  5. Input file that causes the problem
+
+
+System Requirements
+===================
+
+ - Linux x86-64 
+
+ - At least 8GB of RAM memory (+1GB/core if you have more than 4 cores)
+
+ - Python 2.7, see http://www.python.org/ (Python 3.x support is still incomplete)
+
+ - Biopython - http://biopython.org/
+
+ - Dendropy - http://pythonhosted.org/DendroPy/
+
+ - Sifter2.0 - http://sifter.berkeley.edu/
+    Require:
+    * Java 1.4.2+ - http://www.java.com/
+   You must prepare "Sifter2.0" by extracting the downloaded file, entering in the 
+   extracted directory and typing on the terminal:
+     $ make
+
+ - PfamScan - ftp://ftp.sanger.ac.uk/pub/databases/Pfam/Tools/
+    Require:
+    * Hmmer3.0 - http://hmmer.janelia.org/
+      * Must be on $PATH
+    * perl 5+ - http://www.perl.org/
+      * Must be on $PATH
+    * bioperl - http://www.bioperl.org/
+    * perl packages "Moose" and "Data::Printer" 
+      You can install them using cpan typing:
+        $ cpan Moose
+        $ cpan Data::Printer
+    * Must be installed on "Sifter-T" directory.
+
+ - FastTree2.1+ - http://meta.microbesonline.org/fasttree/
+    Require:
+    * Single thread version only or you can face performance issues.
+    * Must be installed on "Sifter-T" directory.
+
+ - Notung2.6+ - http://www.cs.cmu.edu/~durand/Notung/
+    Require:
+    * Java 1.4.2+ - http://www.java.com/
+    * Must be installed on "(Sifter-T)/notung/" subdirectory.
+    * "Notung-X.X.jar" must be renamed to "Notung.jar".
+
+ - MAFFT v7.050+ - http://mafft.cbrc.jp/alignment/software/
+    Require:
+    * Must be on $PATH
+
+
+
+Databases Requirements
+======================
+
+ - Gene Ontology (OBO v1.2 filtered) 
+        <http://www.geneontology.org/GO.downloads.ontology.shtml>
+
+ - PFam files:
+        <ftp://ftp.sanger.ac.uk/pub/databases/Pfam/current_release>
+        * Pfam-A.full.gz
+        * Pfam-A.hmm.dat.gz
+        * Pfam-A.hmm.gz
+        * uniprot_sprot.dat.gz
+        * uniprot_trembl.dat.gz
+        * database_files/taxonomy.txt.gz
+
+ - GOA for Uniprot
+        <http://www.ebi.ac.uk/GOA/uniprot_release.html>
+
+ - NCBI Taxonomy (OBO format)
+        <http://www.berkeleybop.org/ontologies/obo-all/ncbi_taxonomy/ncbi_taxonomy.obo>
+       * Alternatively at:
+        <http://www.obofoundry.org/cgi-bin/detail.cgi?id=ncbi_taxonomy>
+
+ - Files "merged.dmp" and "delnodes.dmp" from "taxdump.tar.gz" file:
+        <ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz>
+
+* These files must be uncompressed and placed at the same directory. This "database"
+  directory is one of Sifter-T's parameters.
+
+* Uncompressed Gene Ontology file must be renamed to "gene_ontology.1_2.obo"
+
+* These files must be prepared with "dbprep.py" script prior to "sifter-t.py" 
+  execution. You can run using the following command ("DIR" is the full path for 
+  "database" directory):
+
+    $ python dbprep.py -d DIR
+
+
+Installation and Usage
+======================
+
+Installation should be as simple as going to the Sifter-T extracted directory
+and running the main script:
+    
+    $ python sifter-t.py -t XX -f FILE -o DIR -d DIR -s DIR -i CODE [options]
+
+Alternatively you can use independent scripts (in order):
+
+  * Check main parameters, files and create "options.pk" for other scripts usage:
+    $ python param_chk_00.py -t XX -f FILE -o DIR -d DIR -s DIR -i CODE [options]
+
+  * Protein Family multiple alignment generation:
+    $ python ntaapfam_01.py -d DIR
+
+  * Annotation recovery and ".pli" files preparation:
+    $ python recann_02.py -d DIR
+
+  * Gene tree preparation:
+    $ python gentree_03.py -d DIR
+
+  * Species tree preparation and reconcilation process:
+    $ python reconciliation_04.py -d DIR
+
+  * Automation of the inference engine execution:
+    $ python runsifter_05.py -d DIR
+
+  * Summarizes results from Sifter-T's workflow:
+    $ python results_06.py -d DIR
+
+
+Typical usage
+=============
+
+* Running "sifter-t.py -h" (help) the software shows:
+
+---------- ---------- --------- --------- --------- --------- --------- ---------
+Usage: 
+ 	sifter-t.py -t XX -f FILE -o DIR -d DIR -s DIR -i CODE [options]
+
+This script reads a nucleotide or protein multifasta FILE, translates in 6
+frames, identifies the PFAM ids associated to each frame, build a tree based
+on PFAM alignments and evidence codes, run SIFTER to propagate information
+from families annotated to families of interest and returns a list of
+annotations and his probabilities.
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -t XX, --type=XX      Data type of the input files. Nucleotide ("nt"),
+                        Aminoacid ("aa") or Protein Family ("pf").
+  -f FILE, --file=FILE  Full path for the FILE containing the data to be
+                        analized.
+  -d /DIRECTORY/DIR/, --database=/DIRECTORY/DIR/
+                        Full path for the directory containing the database
+                        files. Detailed information in "README.txt" file.
+  -o /DIRECTORY/DIR/, --outputdirectory=/DIRECTORY/DIR/
+                        Full path for the output directory.
+  -s /DIRECTORY/DIR/, --sifterdirectory=/DIRECTORY/DIR/
+                        Full path for the directory where SIFTER was prepared.
+  -i CODE               Include Evidence Codes: Experimental Evidence Codes
+                        (EXP, IDA, IPI, IMP, IGI, IEP); Computational Analysis
+                        Evidence Codes (ISS, ISO, ISA, ISM, IGC, RCA, IBD,
+                        IBA), Author Statement Evidence Codes (TAS, NAS);
+                        Curator Statement Evidence Codes (IC, ND);
+                        Automatically-assigned Evidence Codes (IEA). Each code
+                        must be included separately. Ex: "-i EXP -i IDA -i
+                        IPI". For all Experimental Evidence Codes, use "-i
+                        ALL_EXP". For all Computational Analysis Evidence
+                        Codes, use "-i COMP_ALL". For all Evidence Codes,
+                        except IEA, use "-i ABIEA". For all Evidence Codes,
+                        use "-i ALL".
+  -x CODE               (Optional) Remove specific species annotation from the
+                        analisis. The code must be the TaxonomyID. (More
+                        information on http://www.ncbi.nlm.nih.gov/taxonomy)
+  -b CODE               (Optional) Remove full taxon annotation from the
+                        analisis, given the TaxonomyID code for the taxon's
+                        root. (More information on
+                        http://www.ncbi.nlm.nih.gov/taxonomy)
+  --threads=NUM         (Optional) Number of parallel CPU workers to use for
+                        multithreads (default all).
+  -r NUM, --translation-table=NUM
+                        (Optional) Translation table to be used (default - 1 -
+                        Standard Code). For more information, visit http://www
+                        .ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi.
+  --sifter-cutoff=NUM   (Optional) Show only sifter results with probability
+                        above the cutoff (Default: 0.001).
+  --pfamscan-cutoff=NUM
+                        (Optional) During "pfam_scan.pl" step, detect protein
+                        families above the e-value cutoff (Default: 0.00001).
+  --input_species=NUM   (Optional) In order to generate an apropriate Species
+                        Tree, input the NCBI Taxon Identification for the
+                        Species of the input data. (Default: No Species Tree
+                        generation)
+  --reconciliation      (Optional) Enables reconciliation for nucleotide or
+                        aminoacid sequences as input. Require "--
+                        input_species". (Default: No reconciliation.)
+
+---------- ---------- --------- --------- --------- --------- --------- ---------
+
+
+ For example purpose I will assume the following:
+    * Sifter2.0 directory 
+        /home/user/sifter2.0/
+    * "databases" directory 
+        /home/user/SifterDB/
+    * "output" directory 
+        /home/user/sifter_output/
+    * "input" file
+        <protein family list>
+          /home/user/sifter_input/pf_input.txt
+        <nucleotide multifasta sequences from E. coli>
+          /home/user/sifter_input/nt_input.txt
+        <aminoacid multifasta sequences from Homo sapiens>
+          /home/user/sifter_input/aa_input.txt
+    * The machine configuration is a quadcore with 8GB RAM and enough disk space.
+
+
+## 1 ## Protein family list as input data and mandatory parameters
+
+    * /home/user/sifter_input/pf_input.txt
+
+  This file must be a text file with the protein families codes separated by new line:
+
+  PF10978
+  PF00032
+  PF01634
+  PF00001
+  PF00127
+  (...)
+
+  The following command must be used in a single line. It was splitted for display purposes:
+
+    $ python sifter-t.py  
+      -t pf 
+      -f /home/user/sifter_input/pf_input.txt 
+      -o /home/user/sifter_output/protein_families/ 
+      -d /home/user/SifterDB/ 
+      -s /home/user/sifter2.0/
+      -i IDA -i IGI -i IEP
+
+
+  Explaining each parameter (all mandatory):
+    <data type of the input files. input data will be checked based on this type>
+      -t pf 
+
+    <path for the file containing the data to be analized>
+      -f /home/user/sifter_input/pf_input.txt 
+
+    <path for the output directory. does not need to be previously existing.>
+      -o /home/user/sifter_output/protein_families/ 
+
+    <path for the databases directory. all the database files must be there. If 
+     the files were not prepared yet, "sifter-t.py" will call "dbprep.py" functions
+     for this purpose>
+      -d /home/user/SifterDB/ 
+
+    <path for the "Sifter2.0" directory. must be properlly installed.>
+      -s /home/user/sifter2.0/
+ 
+    <evidence codes selection, according to GO - http://www.geneontology.org/GO.evidence.shtml>
+    <Sifter-T accepts all evidence codes, except IKR and IRD.>
+      -i IDA -i IGI -i IEP 
+
+
+## 2 ## Procariotic nucleotide sequence as input data
+
+    * /home/user/sifter_input/nt_input.txt
+
+  The file must be composed of nucleotide sequences in multifasta format, with nucleotides 
+  representations according to IUPAC nucleotide codes.
+
+  The following command must be used in a single line. It was splitted for display purposes:
+
+    $ python sifter-t.py  
+      -t nt 
+      -f /home/user/sifter_input/nt_input.txt 
+      -o /home/user/sifter_output/e_coli_nt/ 
+      -d /home/user/SifterDB/ 
+      -s /home/user/sifter2.0/
+      -i EXP_ALL
+      -b 2759
+      --translation-table=11
+      --pfamscan-cutoff=0.0001
+        
+  Explaining the extra parameters:
+    <evidence codes selection, using a shortcut for all Experimental Evidence 
+     codes selection>
+      -i EXP_ALL
+
+    <remove annotations from all species in a taxonomic branch, according to NCBI 
+     Taxonomy codes>
+    <in the case of procariotes the removal of green plants (33090) and metazoans 
+     (33208) branch is highly advantageous for annotation quality. In this example
+     we removed the Eucariotes (2759) branch.>
+      -b 2759
+
+    <selection of the translation table to be used. in general, use "1" for 
+     eucariotes and "11" for procariotes>
+      --translation-table=11
+
+    <the cutoff for pfamscan domain detection. lower is stricter.>
+      --pfamscan-cutoff=0.0001
+
+
+## 3 ## Eucariotic aminoacid sequence as input data
+
+    * /home/user/sifter_input/aa_input.txt
+
+  The file must be composed of aminoacid sequences in multifasta format, with 
+  aminoacids representations according to IUPAC aminoacid codes.
+
+  The following command must be used in a single line. It was splitted for display purposes:
+
+    $ python sifter-t.py  
+      -t aa 
+      -f /home/user/sifter_input/aa_input.txt 
+      -o /home/user/sifter_output/Human_aa/ 
+      -d /home/user/SifterDB/ 
+      -s /home/user/sifter2.0/
+      -i ABIEA
+      -x 9606
+      --reconciliation
+      --input_species=9606
+      --sifter-cutoff=0.01
+      --threads=3
+        
+  Explaining the extra parameters:
+    <evidence codes selection, using a shortcut for all but IEA Evidence codes 
+     selection. Using IEA evidence code will increase substantially the running 
+     time and memory usage.>
+      -i ABIEA
+
+    <remove annotations from a single species, according to NCBI Taxonomy codes>
+    <a tipical usage is to remove the own species annotations to avoid self 
+     annotation biases.>
+      -x 9606
+
+    <enables species tree building and reconciliation process for all protein 
+     families. require "--input_species" option.>
+      --reconciliation
+
+    <itentify the NCBI Taxonomy ID for the sequence's input species. required 
+     for species tree building>
+      --input_species=9606
+
+    <shows in the result file the annotations with probabilities above the 
+     cutoff. higher is stricter.>
+      --sifter-cutoff=0.01
+
+    <number of threads to use. default is all.>
+      --threads=3
+
+
+
+
+Output Stucture
+===============
+
+ * The "REPORT.tab" is a "Tab Separated Values" file with 2 blocks of information:
+        1 - Header
+        2 - Annotated genes
+
+    Collumns: <Gene Name> <reading frame> <aminoacid start position> 
+    <aminoacid stop position> <PFam code> <probability> <GO Code> <GO Name>
+    
+    Gene Name - are returned in the same order as input.
+
+    Reading Frame - Uses the Watson/Crick notation
+        c - Crick - sense strand
+        w - Watson- antisense strand
+        1, 2, 3 - The reading frame
+
+    Start/Stop position - For nucleotides or aminoacid inputs, it shows the 
+    begining and the end of an aminoacid region (result of reading frame 
+    translation or not) with identified Protein Family.
+        
+    PFam Code - The code for the Protein Family identified at this region.
+
+    Probability - Sifter2.0 returns a list of probabilities for a list of
+    functions. Sifter-T shows only the functions (according to GO) with
+    probabilities above the cutoff. The probability can be read as "The 
+    probability of the identified domain have the function [name of the
+    function] given the Protein Family structure and annotations. Sometimes  
+    you can find probabilities "0.999999999999". It means that this 
+    particular Protein Family have only one GO number annotated along the tree,
+    so the probability of the identified domain have the function X, given that
+    this is the only function on the tree, is almost 1.
+
+    GO Code - The Gene Ontology code for the annotated function.
+    
+    GO Name - The Gene Ontology full name for the annotated GO code.
+
+
+ * The "REPORT.txt" file have 5 blocks of information:
+        1 - Header
+        2 - Genes without associated protein family - Sifter can not
+            annotate those genes
+        2 - Genes in families without a single annotation - Sifter can not
+            annotate those genes
+        3 - Families with annotations, but none among the selected evidence  
+            codes. Sifter can annotate if you include other evidence codes.
+        4 - Annotated genes
+  
+    - The annotated genes shows the follloing structure for aminoacid input:
+
+    [gene name]
+    	[start position]-[stop position] - [protein family code]
+    		PROB_MAX	GO	GO_DESCRIPTION
+    		PROB_MID	GO	GO_DESCRIPTION
+    		PROB_MIN	GO	GO_DESCRIPTION
+
+    - And this structure for nucleotide input:
+
+    [gene name]
+    	[reading frame] - [start pos]-[stop pos] - [protein family code]
+    		PROB_MAX	GO	GO_DESCRIPTION
+    		PROB_MID	GO	GO_DESCRIPTION
+    		PROB_MIN	GO	GO_DESCRIPTION
+
+    - The report for Protein Families as inputs uses the same basic structure as 
+      the REPORT_alt.txt for other types of input:
+
+    [protein family code]
+        [gene name]
+    		PROB_MAX	GO	GO_DESCRIPTION
+    		PROB_MID	GO	GO_DESCRIPTION
+    		PROB_MIN	GO	GO_DESCRIPTION
+
+
+ * The "REPORT_alt.txt" file (just for aa and nt inputs) have 2 blocks of information:
+        1 - Header
+        2 - Annotated genes
+
+    The annotated genes shows the follloing structure for aminoacid input:
+    [protein family code]
+        [gene name]|[start position]-[stop position] 
+    		PROB_MAX	GO	GO_DESCRIPTION
+    		PROB_MID	GO	GO_DESCRIPTION
+    		PROB_MIN	GO	GO_DESCRIPTION
+
+    And this structure for nucleotide input:
+    [protein family code]
+        [gene name]|[reading frame]|[start position]-[stop position] 
+    		PROB_MAX	GO	GO_DESCRIPTION
+    		PROB_MID	GO	GO_DESCRIPTION
+    		PROB_MIN	GO	GO_DESCRIPTION
+
+
+
+Testing
+=======
+
+Sifter2.0 was compared with Sifter1.1 through a hundred families dataset.
+This dataset is available at <http://sifter.berkeley.edu/>.
+
+You can use Sifter-T to reproduce the "hundred families dataset". 
+For this you must download the Sifter-T needed files from the following databases:
+    * Pfam v24: <ftp://ftp.sanger.ac.uk/pub/databases/Pfam/releases/Pfam24.0/>
+    * GOA v80: <ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/old/UNIPROT/>
+    * GO 2010-03-01: <http://www.geneontology.org/ontology-archive/gene_ontology_edit.obo.2010-03-01.gz>
+    * NCBI Taxonomy (OBO format): Latest version.
+
+After downloading and extracting the database files you must prepare them:
+
+    $ python dbprep.py -d DIR
+
+And then you can run Sifter-T using the ready-to-use "hundred_families_site.txt" file 
+included in the package:
+
+    $ python sifter-t.py -t pf -f test/hundred_families_site.txt -o [output folder] -d [database directory] -s [sifter2.0 directory] -i EXP_ALL
+
+There is another version of the huundred families dataset in "test" folder. If you
+download from the supplemental material of "Sifter2.0" paper, there are some minor 
+differences between it and the website version. Both "hundred families dataset" are 
+included in "test" folder.
+In the end you will find some subdirectories inside [output folder]. Each 
+subdirectory is named regarding a protein family, and have a set of intermediate
+files. The files "PF_____.nhx" and "PF_____.pli" for each family must be equivalent
+to the same files in the hundred families dataset from sifter2.0 website.
+
+You can go further and build REPORT files for the original "hundred families dataset".
+For this you should replace the builded files for the original ones. I've included a 
+script to help you in this task:
+
+    $ python hundred_families_test.py -i [original] -o [builded]
+
+It removes the Sifter2.0 annotation files for the builded hundred families output
+directory and rename "REPORT.tab" and "REPORT.txt" to "old_REPORT.tab" and
+"old_REPORT.txt". Next, you must run the script that automates Sifter2.0 annotation:
+
+    $ python runsifter_05.py -d [output dir]
+
+And last, create again the report files:
+
+    $ python results_06.py -d [output dir]
+    
+Now you can easily compare the original and the builded annotations.
+
+
