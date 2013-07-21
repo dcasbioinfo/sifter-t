@@ -225,7 +225,10 @@ def pfam_scan_multi(options):
         sleep(options.threads*0.05)
 
         if p.is_alive() and q.empty():
-            p.terminate()
+            sleep(options.threads*0.2)
+            if p.is_alive() and q.empty():
+                p.terminate()
+
         return num_files
     
 
@@ -556,7 +559,9 @@ def multi_write_selected_pfam_genes(options, useful_pfam, annot_genes_all):
     q.join()
     sleep(options.threads*0.05)
     if p.is_alive() and q.empty():
-        p.terminate()
+        sleep(options.threads*0.2)
+        if p.is_alive() and q.empty():
+            p.terminate()
 
 
 def clean_useful_pfam(options, useful_pfam):

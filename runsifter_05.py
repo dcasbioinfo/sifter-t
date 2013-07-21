@@ -126,7 +126,9 @@ def sifter_multi(options, familylist, scodes):
     q.join()
     sleep(options.threads*0.05)
     if p0.is_alive() and q.empty():
-        p0.terminate()
+        sleep(options.threads*0.2)
+        if p0.is_alive() and q.empty():
+            p0.terminate()
     sleep(options.threads*0.05)
     numfunc_familylist = list()
     for fam in familylist:
@@ -148,7 +150,9 @@ def sifter_multi(options, familylist, scodes):
     q.join()
     sleep(options.threads*0.05)
     if p1.is_alive() and q.empty():
-        p1.terminate()
+        sleep(options.threads*0.2)
+        if p1.is_alive() and q.empty():
+            p1.terminate()
 
 
     

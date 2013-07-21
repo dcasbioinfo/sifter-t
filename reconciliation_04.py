@@ -190,8 +190,9 @@ def build_rec_multi(options, familylist):
         print ""
     sleep(options.threads*0.1)
     if p.is_alive() and q.empty():
-        print "Kill zombie threads."
-        p.terminate()
+        sleep(options.threads*0.2)
+        if p.is_alive() and q.empty():
+            p.terminate()
     return None
 
 

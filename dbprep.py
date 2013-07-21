@@ -135,7 +135,7 @@ def recover_stockholm(options):
     outf.close()
     infpf.close()
     if i > 0:
-        print ""
+        print "\n"
     return fullfamilyset
 
 
@@ -143,7 +143,7 @@ def write_pfamlist(options, fullfamilyset):
     '''
     Write family list. 
     '''
-    print "\n# Loading family list...\n"
+    print "# Loading family list...\n"
     handle = open(options.dbdir+"pfam.list","w")
     fullfamilylist = list(fullfamilyset)
     fullfamilylist.sort()
@@ -216,9 +216,13 @@ def stockfasta_multi(options, fullfamilyset):
         if os.path.exists(options.dbdir+"align/stockholm/"+item[1]+".stockholm") \
         and not os.path.exists(options.dbdir+"align/"+item[1]+".fasta"):
             q.put(item[1])
-
+    lastline = True
+    if q.qsize() == 0:
+        lastline = False
     memsize = get_memsize()
-    if (memsize/1572864) < options.threads and int(memsize/1572864) <= 1:
+    if (memsize/1572864.) <= 2.:
+        num_proc = 1
+    elif (memsize/1572864.) < options.threads:
         num_proc = int(memsize/1572864)
     else:
         num_proc = options.threads
@@ -229,6 +233,13 @@ def stockfasta_multi(options, fullfamilyset):
 
     sleep(options.threads*0.2)
     q.join()
+    sleep(options.threads*0.05)
+    if proc.is_alive() and q.empty():
+        sleep(options.threads*0.2)
+        if proc.is_alive() and q.empty():
+            proc.terminate()
+    if lastline:
+        print ""
     del(fam_size)
 
 
@@ -236,7 +247,7 @@ def get_acession_numbers(options):
     '''
     Get genes and accession numbers from Pfam-A.full
     '''
-    print "\n# Loading genes and accession numbers (1st phase)...\n"
+    print "# Loading genes and accession numbers (1st phase)...\n"
     gene_ac = {}
     pf = ""
     infpf = open(options.dbdir+"Pfam-A.full", 'r')
@@ -261,7 +272,7 @@ def get_fullgeneset(gene_ac):
     '''
     Get the complete set of genes present on Pfam database.
     '''
-    print "\n# Loading genes and accession numbers (2nd phase)...\n"
+    print "# Loading genes and accession numbers (2nd phase)...\n"
     fullgeneset = "set() "
     i = 0
     temp_set = set()
@@ -303,41 +314,76 @@ def summary_goa(options, fullgeneset, ac_gene):
     '''
     Generate a file with anotations of all types for genes in PFAM
     '''
-    print "\n# Summarizing GOA database...\n"                
+    from sys import stdout
+    print "# Summarizing GOA database...\n"                
     forbidden_ec = set(["ND", "NR", "IKR", "IRD"])
+    not_ec = set(["IKR", "IRD"])
     i = 0
-    x = 0
     if not os.path.exists(options.dbdir+"summary_gene_association.goa_uniprot") or options.force:
         print("# Preparing intermediate files from \"gene_association.goa_uniprot\"...\n")
         infgo = open(options.dbdir+"gene_association.goa_uniprot", 'r')
-        out = open(options.dbdir+"summary_gene_association.goa_uniprot", 'w')
+        out = open(options.dbdir+"summary_gene_association.goa_uniprot_temp", 'w')
+        outnot = open(options.dbdir+"summary_gene_association.goa_uniprot_not", 'w')
         for line in infgo:
             d = line.strip().split('\t')
-            if len(d) > 10 and d[8] == 'F' and d[0][0:3] == 'Uni' and d[6] not in forbidden_ec:
-                if d[10][(d[10].rfind('|')+1):len(d[10])] in fullgeneset:
-                    out.write("%s\t%s\t%s\t%s\n" % 
-                    (d[1], d[4], d[6], d[10][(d[10].rfind('|')+1):len(d[10])]))
-                elif d[1] in ac_gene:
-                    out.write("%s\t%s\t%s\t%s\n" % (d[1], d[4], d[6], ac_gene[d[1]]))
+            if len(d) > 10 and d[8] == 'F' and d[0][0:3] == 'Uni':
+                if d[6] not in forbidden_ec:
+                    if d[10][(d[10].rfind('|')+1):len(d[10])] in fullgeneset:
+                        out.write("%s\t%s\t%s\t%s\n" % 
+                        (d[1], d[4], d[6], d[10][(d[10].rfind('|')+1):len(d[10])]))
+                    elif d[1] in ac_gene:
+                        out.write("%s\t%s\t%s\t%s\n" % (d[1], d[4], d[6], ac_gene[d[1]]))
+                elif d[6] in not_ec:
+                    if d[10][(d[10].rfind('|')+1):len(d[10])] in fullgeneset:
+                        outnot.write("%s\t%s\t%s\t%s\n" % 
+                        (d[1], d[4], d[6], d[10][(d[10].rfind('|')+1):len(d[10])]))
+                    elif d[1] in ac_gene:
+                        outnot.write("%s\t%s\t%s\t%s\n" % (d[1], d[4], d[6], ac_gene[d[1]]))
                 i = i + 1
-                if i >= 20000:
-                    print ".",
+                if i >= 100:
+                    stdout.write("\r%s          " % d[1])
+                    stdout.flush()
                     i = 0
-                    x = x + 1
-                if x >= 50:
-                    print ""
-                    x = 0
         infgo.close()
         out.close()
-    del(forbidden_ec)
-    print ""
+        outnot.close()
+        stdout.write("\r")
+        stdout.flush()
+        print("# Cleaning not-annotations (IKR and IRD evidence codes) \n")
+        goa_not_handle = open(options.dbdir+"summary_gene_association.goa_uniprot_not", 'r')
+        goa_not_dict = {}
+        for line in goa_not_handle:
+            d = line.strip().split('\t')
+            try:
+                goa_not_dict[d[3]].add(d[1])
+            except:
+                goa_not_dict[d[3]] = set()
+                goa_not_dict[d[3]].add(d[1])
+        goa_not_handle.close()
+        goa_handle = open(options.dbdir+"summary_gene_association.goa_uniprot", 'w')
+        goa_temp_handle = open(options.dbdir+"summary_gene_association.goa_uniprot_temp", 'r')
+        counter_not = 0
+        for line in goa_temp_handle:
+            d = line.strip().split('\t')
+            if not d[3] in goa_not_dict:
+                goa_handle.write(line)
+            elif not d[1] in goa_not_dict[d[3]]:
+                goa_handle.write(line)
+            else:
+                counter_not += 1
+        goa_handle.close()
+        goa_temp_handle.close()
+        if os.path.exists(options.dbdir+"summary_gene_association.goa_uniprot_temp"):
+            os.remove(options.dbdir+"summary_gene_association.goa_uniprot_temp")
+        print counter_not, "not-annotations were removed.\n"
+    
 
 
 def get_annot_gene_set(options):
     '''
     Load a list of all pfam annotated genes.
     '''
-    print "\n# Storing annotated genes list..."
+    print "# Storing annotated genes list...\n"
     annot_gene_set = set()
     infgo = open(options.dbdir+"summary_gene_association.goa_uniprot", 'r')
     for line in infgo:
@@ -367,7 +413,7 @@ def write_gene_sp(options, annot_gene_set):
     #Preparing gene's Species information
     sp_gene = {}
     if not os.path.exists(options.dbdir+"summary_uniprot_trembl.dat") or options.force:
-        print "\n# Preparing gene's Species (from uniprot_trembl.dat) information..."
+        print "# Preparing gene's Species (from uniprot_trembl.dat) information...\n"
         uniprot_trembl = open(options.dbdir+"uniprot_trembl.dat", 'r')
         x = {}
         x["ID"] = ""
@@ -393,7 +439,7 @@ def write_gene_sp(options, annot_gene_set):
                 break
         uniprot_trembl.close()
     if not os.path.exists(options.dbdir+"summary_uniprot_sprot.dat") or options.force:
-        print "\n# Preparing gene's Species (from uniprot_sprot.dat) information..."
+        print "# Preparing gene's Species (from uniprot_sprot.dat) information...\n"
         uniprot_sprot = open(options.dbdir+"uniprot_sprot.dat", 'r')
         x = {}
         x["ID"] = ""
@@ -446,8 +492,7 @@ def write_gene_sp(options, annot_gene_set):
     if os.path.exists(options.dbdir+"delnodes.dmp"):
         with open(options.dbdir+"delnodes.dmp") as handle_delnodes:
             for line in handle_delnodes:
-                d = line.strip().split()
-                delnodes.add(d[0])
+                delnodes.add(line.strip().split()[0])
 
     merged_nodes = {}
     if os.path.exists(options.dbdir+"merged.dmp"):
@@ -517,7 +562,7 @@ def summ_tax1(options):
     Prepare Taxonomy information from "taxonomy.txt".
     '''
     if not os.path.exists(options.dbdir+"summary_taxonomy.txt") or options.force:
-        print "\n# Preparing Taxonomy information..."
+        print "# Preparing Taxonomy information - \"taxonomy.txt\"...\n"
         taxonomy = open(options.dbdir+"taxonomy.txt", 'r')
         outf = open(options.dbdir+"summary_taxonomy.txt", 'w')
         while True:
@@ -541,7 +586,7 @@ def summ_tax2(options):
     Prepare Taxonomy information from "ncbi_taxonomy.obo".
     '''
     if not os.path.exists(options.dbdir+"summary_ncbi_taxonomy.obo") or options.force:
-        print "\nPreparing Taxonomy information (from ncbi_taxonomy.obo) information..."
+        print "# Preparing Taxonomy information - \"ncbi_taxonomy.obo\"...\n"
         ncbi_taxonomy = open(options.dbdir+"ncbi_taxonomy.obo", 'r')
         outf = open(options.dbdir+"summary_ncbi_taxonomy.obo", 'w')
         x = {}
@@ -583,7 +628,7 @@ def obo2_functionontology(options):
     if options.force and os.path.exists(options.output):
         os.remove(options.output)
 
-    print "\n# Building function.ontology..."
+    print "# Building function.ontology...\n"
     #import
     go_tree = import_obogo(options.input)
     go_tree = create_child_nodes(go_tree)
@@ -653,9 +698,9 @@ def prepare_hmm(options):
     '''
     Use hmmer3 to prepare Pfam-A hmm alignments.
     '''
-    print "\n# Preparing PFam's HMM alignments...\n"
+    print "# Preparing PFam's HMM alignments...\n"
     os.system("hmmpress "+os.path.abspath(options.dbdir).replace(" ","\ ")+"/Pfam-A.hmm")
-
+    print ""
 
 
 def _main():
@@ -777,6 +822,7 @@ def _main():
     obo2_functionontology(options)
     write_go_names(options)
     prepare_hmm(options)
+    print "# Cleaning up and exiting..."
     sys.exit()
 
 if __name__ == '__main__':

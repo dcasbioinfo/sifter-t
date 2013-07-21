@@ -232,11 +232,13 @@ def pfam2pli_multi(options):
         p = Process(target=pfam2pli, name='%i' % (i+1), 
             args = (options, families, uniprotskeys_set, uniprots))
         p.start()
-    sleep(options.threads*0.1)
+    sleep(options.threads*0.05)
     q.join()
-    sleep(options.threads*0.1)
+    sleep(options.threads*0.05)
     if p.is_alive() and q.empty():
-        p.terminate()
+        sleep(options.threads*0.2)
+        if p.is_alive() and q.empty():
+            p.terminate()
     print "\n"
 
 

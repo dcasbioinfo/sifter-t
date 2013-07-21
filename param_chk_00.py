@@ -215,7 +215,7 @@ def check_sifter_files(options):
     Check if sifter2.0 files are on the sifter directory, and check if sifter 
     is correctly installed.
     '''
-    print "# Checking SIFTER consistency...\n"
+    print "# Checking Sifter2.0 consistency...\n"
     #checking SIFTER files
     handle = open("sifter-t_chk/sifter2.0_files.list1","r")
     for line in handle:
@@ -251,6 +251,22 @@ def check_pfam_scan(options):
     handle.close()
 
 
+def check_siftert(options):
+    '''
+    Check if all essencial Sifter-T files are present.
+    '''
+    print "# Checking Sifter-T consistency...\n"
+    handle = open(options.stdir+"sifter-t_chk/sifter-t_files.list","r")
+    for line in handle:
+        tmp_str = line.strip().split()
+        if not os.path.exists(tmp_str[0]):
+            print "Sifter-T is corrupted. Some files are missing. Please " \
+                  "download it again from " \
+                  "\"https://github.com/dcasbioinfo/sifter-t\". \nExiting..."
+            sys.exit(1)
+    handle.close()
+
+
 def check_fasttree(options):
     '''
     Check if FastTree is present on Sifter-T directory.
@@ -271,11 +287,11 @@ def check_notung(options):
     Check if Notung is present on Sifter-T directory.
     '''
     print "# Checking Notung...\n"
-    if not os.path.isfile(options.stdir+"Notung.jar"):
-        print "Notung.jar is not present on the actual directory. This file "  \
-              "must be on the same directory as Sifter-T's scripts. \nExiting..."
+    if not os.path.isfile(options.stdir+"notung/Notung.jar"):
+        print "Notung.jar is not present on the correct directory. This file "  \
+              "must be on \"notung/\" subdirectory of Sifter-T's folder. \nExiting..."
         sys.exit(1)
-    if not os.access(options.stdir+"Notung.jar", os.R_OK):
+    if not os.access(options.stdir+"notung/Notung.jar", os.R_OK):
         print "The actual user does not have READING access to Notung. "   \
               "\nExiting..." 
         sys.exit(1)
@@ -633,6 +649,7 @@ def _main():
     options = check_outdir(options)
     options = check_sifter_dir(options)
     options.stdir = os.path.abspath(os.getcwd())+"/"
+    check_siftert(options)
     check_sifter_files(options)
     check_pfam_scan(options)
     check_fasttree(options)

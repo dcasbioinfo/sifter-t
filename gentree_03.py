@@ -145,8 +145,9 @@ def gentree_multi(options, familylist, gene_sp):
         print ""
     sleep(options.threads*0.05)
     if p.is_alive() and q.empty():
-        print "Kill zombie threads."
-        p.terminate()
+        sleep(options.threads*0.2)
+        if p.is_alive() and q.empty():
+            p.terminate()
     return None
 
 

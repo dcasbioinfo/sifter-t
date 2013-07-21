@@ -8,6 +8,7 @@ phylogenetic structure for Gene Ontology annotations propagation.
 
 Sifter-T expands "Sifter2.0" usability, scalability and functionality:
     - Accepts nucleotide and aminoacid as inputs
+    - Automated
     - Multithreading
     - Easy to use
 
