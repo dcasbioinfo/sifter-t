@@ -25,7 +25,7 @@ Source Code Repository
 
 The primary home page for Sifter-T is at:
 
-    http://labpib.fmrp.usp.br/~methods/sifter-t/
+    http://labpib.fmrp.usp.br/methods/sifter-t/
 
 The Sifter-T source code is version-controlled using "Git", and the "Sifter-T 
 Git repository <https://github.com/dcasbioinfo/sifter-t.git>" can be cloned by 
@@ -98,6 +98,7 @@ System Requirements
     Require:
     * Hmmer3.0 - http://hmmer.janelia.org/
       * Must be on $PATH
+      * Caution: Hmmer Beta versions are not supported by PfamScan.
     * perl 5+ - http://www.perl.org/
       * Must be on $PATH
     * bioperl - http://www.bioperl.org/

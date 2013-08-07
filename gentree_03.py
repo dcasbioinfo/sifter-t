@@ -156,7 +156,7 @@ def _main():
     Main function for standalone usage.
     '''
     #Defines usage and help
-    usage = "\n    v %prog -d DIR"
+    usage = "\n     %prog -d DIR"
     description = "Gene tree preparation for SIFTER pipeline usage."
     #Defines input variables
     parser = OptionParser(usage=usage, 
