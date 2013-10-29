@@ -10,8 +10,9 @@
 #  If you use this work or any portion thereof in published work,           #
 #  please cite it as:                                                       #
 #                                                                           #
-#     Almeida-e-Silva D.C. and Vêncio R.Z.N. 2013. Sifter-T: A functional   #
+#     Almeida-e-Silva D.C. and Vêncio R.Z.N. Sifter-T: A functional         #
 #     framework for large-scale probabilistic protein domain annotation.    #
+#     (In preparation...)                                                   #
 #                                                                           #
 ########## ########## ########### ########## ########## ########## ##########
 
