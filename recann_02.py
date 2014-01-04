@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#  -*- coding: iso-8859-1 -*-  
+# -*- coding: iso-8859-1 -*-  
 
 ########## ########## ########### ########## ########## ########## ##########
 #  Sifter-T - Sifter framework for large scale Functional Annotation.       #
@@ -139,24 +139,52 @@ def get_uniprots(options):
     # other evidence codes with appropriate probability
     codes - sift = ['ISM', 'IBA', 'IBD', 'ISO', 'EXP', 'ISA']
 
+
+    New IEA prior probability attributions (Sifter2.0 source):
+    IMP = 0.9
+    IPI = 0.8
+    ISS = 0.7
+    IDA = 0.6
+    IEP = 0.5
+    TAS = 0.4
+    NAS = 0.3
+    RCA = 0.2
+    IEA = 0.1
+    
+    Mappings
+
+
     '''
+    ec_values = {}
+    ec_values["0.9"] = "IMP"
+    ec_values["0.8"] = "IPI"
+    ec_values["0.7"] = "ISS"
+    ec_values["0.6"] = "IDA"
+    ec_values["0.5"] = "IEP"
+    ec_values["0.4"] = "TAS"
+    ec_values["0.3"] = "NAS"
+    ec_values["0.2"] = "RCA"
+    ec_values["0.1"] = "IEA"
+
+    codes = ["IPI", "IDA", "ISS", "TAS", "IMP", "NAS", "ND", "IGI", "IC", "EXP",
+             "IEP", "RCA", "IGC", "ISO", "ISA", "ISM", "IEA", "IBA", "IBD"]
+
+    ec_mapping = {}
+    handle = open(options.stdir+"prob_conversion.txt","r")
+    for line in handle:
+        d = line.strip().split()
+        if d[1] not in ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9"]:
+            print "Invalid value "+str(d[1])+"in \"prob_conversion.txt\" file. \nExiting... "
+            sys.exit(1)
+        else:
+            ec_mapping[d[0]] = d[1]
+
+    handle.close()
+
     ec_convert = {}
-    #0.9
-    ec_convert['EXP'] = 'IDA'
-    #0.8
-    ec_convert['IGI'] = 'IMP'
-    #0.4
-    ec_convert['ISM'] = 'ISS'
-    #0.4
-    ec_convert['IBA'] = 'ISS'
-    #0.4
-    ec_convert['IBD'] = 'ISS'
-    #0.4
-    ec_convert['ISO'] = 'ISS'
-    #0.4
-    ec_convert['ISA'] = 'ISS'
-    #0.4
-    ec_convert['IGC'] = 'ISS'
+    for code in codes:
+        ec_convert[code] = ec_values[ec_mapping[code]]
+
 
     # Loading GOA annotations
     uniprots = {}
@@ -176,12 +204,133 @@ def get_uniprots(options):
     return uniprots
 
 
+def get_uniprots_cov(options, familylist):
+    #Sifter2.0 bug fix - evidence codes probability
+    '''
+    # Sifter2.0 accepts the following evidence codes:
+    [EVCODE]	[probability a priori]
+    "GOR"	0.9
+    "IDA"	0.9
+    "TAS"	0.9
+    "IGI"	0.8*
+    "IMP"	0.8
+    "IPI"	0.8
+    "E" 	0.6
+    "IC"	0.4
+    "IEP"	0.4
+    "IGC"	0.4*
+    "ISS"	0.4
+    "RCA"	0.4
+    "NAS"	0.3
+    "ND"	0.3
+    "NR"	0.3
+    "P" 	0.2
+    "IEA"	0.2
+
+    * Bug - Misattribution of probabilities
+    
+    # Besides, Sifter2.0 accepts the following evidence codes:
+    sift = ["E","GOR","IC","IDA","IEA","IEP","IGC","IGI","IMP","IPI","ISS",
+            "NAS","ND","NR","P","RCA","TAS"]
+
+    # However, according to GO, these are the full list of evidence codes:
+    codes = ["IPI", "IDA", "ISS", "TAS", "IMP", "NAS", "ND", "IGI", "IC", "EXP",
+             "IEP", "RCA", "IGC", "ISO", "ISA", "ISM", "IEA", "IBA", "IBD"]
+
+    # We decided to cover the newer evidence codes changing their names for 
+    # other evidence codes with appropriate probability
+    codes - sift = ['ISM', 'IBA', 'IBD', 'ISO', 'EXP', 'ISA']
+
+
+    New IEA prior probability attributions (Sifter2.0 source):
+    IMP = 0.9
+    IPI = 0.8
+    ISS = 0.7
+    IDA = 0.6
+    IEP = 0.5
+    TAS = 0.4
+    NAS = 0.3
+    RCA = 0.2
+    IEA = 0.1
+    
+    Mappings
+
+
+    '''
+    ec_values = {}
+    ec_values["0.9"] = "IMP"
+    ec_values["0.8"] = "IPI"
+    ec_values["0.7"] = "ISS"
+    ec_values["0.6"] = "IDA"
+    ec_values["0.5"] = "IEP"
+    ec_values["0.4"] = "TAS"
+    ec_values["0.3"] = "NAS"
+    ec_values["0.2"] = "RCA"
+    ec_values["0.1"] = "IEA"
+
+    codes = ["IPI", "IDA", "ISS", "TAS", "IMP", "NAS", "ND", "IGI", "IC", "EXP",
+             "IEP", "RCA", "IGC", "ISO", "ISA", "ISM", "IEA", "IBA", "IBD"]
+
+    ec_mapping = {}
+    handle = open(options.stdir+"prob_conversion.txt","r")
+    for line in handle:
+        d = line.strip().split()
+        if d[1] not in ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9"]:
+            print "Invalid value "+str(d[1])+"in \"prob_conversion.txt\" file. \nExiting... "
+            sys.exit(1)
+        else:
+            ec_mapping[d[0]] = d[1]
+
+    handle.close()
+
+    ec_convert = {}
+    for code in codes:
+        ec_convert[code] = ec_values[ec_mapping[code]]
+
+    # Load families genes
+    full_genes_set = set()
+    for fam in familylist:
+        with open(options.dbdir+"align/gene_list/"+fam+".gene") as handle:
+            for line in handle:
+                d0 = line.strip().split()[0]
+                d1 = d0[0:d0.find("/")]
+                full_genes_set.add(d1)
+
+    # Loading GOA annotations
+    uniprots = {}
+    handle = open(options.dbdir+"summary_gene_association.goa_uniprot","r")
+    forbidden_genes = get_forbidden_genes(options)
+    for line in handle:
+        d = line.strip().split()
+        if d[2] == "IEA" and d[3] not in forbidden_genes and d[3] in full_genes_set:
+            try:
+                uniprots[d[3]].append((d[1], d[2]))
+            except:
+                uniprots[d[3]] = list()
+                uniprots[d[3]].append((d[1], d[2]))
+    handle.close()
+    return uniprots
+
+
 def get_familylist(options):
     '''
     Load list of families to be treated.
     '''
     familylist = list()
     handle = open(options.outdir+"useful_pfam.txt","r")
+    for line in handle:
+        d = line.strip().split()
+        familylist.append(d[0])
+    handle.close()
+    return familylist
+
+
+def get_familylist2(options):
+    '''
+    Load list of families to be treated in extended coverage.
+    '''
+    familylist = list()
+    handle = open(options.outdir+"useful_pfam2.txt","r")
     for line in handle:
         d = line.strip().split()
         familylist.append(d[0])
@@ -240,7 +389,42 @@ def pfam2pli_multi(options):
         sleep(options.threads*0.2)
         if p.is_alive() and q.empty():
             p.terminate()
-    print "\n"
+    if options.coverage:
+        print ""
+        familylist = get_familylist2(options)
+        for pf in familylist:
+            q.put(pf)
+        if options.force:
+            for pf in familylist:
+                if os.path.exists(options.outdir+pf.upper()+"/"+pf.upper()+".pli"):
+                    os.remove(options.outdir+pf.upper()+"/"+pf.upper()+".pli")
+        del(uniprots)
+        del(uniprotskeys_set)
+        uniprots = get_uniprots_cov(options, familylist)
+        uniprotskeys_set = set(uniprots)
+    
+        n = 0
+        for pf in familylist:
+            print pf,
+            n = n+1
+            if n == 10:
+                n = 0
+                print ""
+    
+        families = get_families(options, familylist)
+        #Start a pool of workers
+        for i in range(options.threads):
+            p = Process(target=pfam2pli, name='%i' % (i+1), 
+                args = (options, families, uniprotskeys_set, uniprots))
+            p.start()
+        sleep(options.threads*0.05)
+        q.join()
+        sleep(options.threads*0.05)
+        if p.is_alive() and q.empty():
+            sleep(options.threads*0.2)
+            if p.is_alive() and q.empty():
+                p.terminate()
+        print "\n"
 
 
 

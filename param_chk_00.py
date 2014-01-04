@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#  -*- coding: iso-8859-1 -*-  
+# -*- coding: iso-8859-1 -*-  
 
 ########## ########## ########### ########## ########## ########## ##########
 #  Sifter-T - Sifter framework for large scale Functional Annotation.       #
@@ -211,12 +211,64 @@ def check_sifter_dir(options):
     return options
 
 
+def sifter_make_clean(options):
+    '''
+    Equivalent to "make clean" on sifter2.0 directory
+    '''
+    make_clean_list ['PFun.class', 'PFunLibrary.class', 'util/Filefinder.class', 'util/PFunDAG.class', 'util/PfunFamily.class', 'util/PFunGODAG.class', 'util/PfunProtein.class', 'util/PFunUtil.class', 'util/Settings.class', 'stat/NodeProbability.class', 'stat/PFunLearn.class', 'stat/PVector.class', 'stat/PMatrix.class', 'stat/PFunTransMatrix.class', 'stat/PowerSet.class', 'stat/PFunTree.class', 'sifter.jar']
+    for item in make_clean_list:
+        if os.path.exists(options.sdir+item):
+            os.remove(options.sdir+item)
+
+
+def sifter_make(options):
+    '''
+    Equivalent to "make" on sifter2.0 directory
+    '''
+    sdir = options.sdir
+    make1 = "javac -Xlint:none -source 1.5 -classpath .:"+sdir+"lib/commons-cli-1.0.jar:"+sdir+"lib/jakarta-regexp-1.3.jar:"+sdir+"jlapack-0.6/f2jutil.jar:"+sdir+"jlapack-0.6/blas.jar:"+sdir+"jlapack-0.6/lapack.jar:"+sdir+"jlapack-0.6/xerbla.jar "+sdir+"PFun.java"
+    os.system(make1)
+
+    with open(options.sdir+'manifest.txt', 'w') as handle:
+        handle.write("Class-Path: "+sdir+"lib/commons-cli-1.0.jar "+sdir+"lib/jakarta-regexp-1.3.jar "+sdir+"jlapack-0.6/f2jutil.jar "+sdir+"jlapack-0.6/blas.jar "+sdir+"jlapack-0.6/lapack.jar "+sdir+"jlapack-0.6/xerbla.jar\n")
+        handle.write("Main-Class: "+sdir+"PFun\n")
+
+    make2 = "jar cmf "+sdir+"manifest.txt "+sdir+"sifter.jar "+sdir+"PFun.class "+sdir+"PFunLibrary.class "+sdir+"util/Filefinder.class "+sdir+"util/PFunDAG.class "+sdir+"util/PfunFamily.class "+sdir+"util/PFunGODAG.class "+sdir+"util/PfunProtein.class "+sdir+"util/PFunUtil.class "+sdir+"util/Settings.class "+sdir+"stat/NodeProbability.class "+sdir+"stat/PFunLearn.class "+sdir+"stat/PVector.class "+sdir+"stat/PMatrix.class "+sdir+"stat/PFunTransMatrix.class "+sdir+"stat/PowerSet.class "+sdir+"stat/PFunTree.class '"+sdir.replace("\ "," ")+"stat/PFunTransMatrix$Parameter.class' '"+sdir.replace("\ "," ")+"stat/PFunTree$Node.class' '"+sdir.replace("\ "," ")+"util/PFunGODAG$Entry.class' '"+sdir.replace("\ "," ")+"util/PFunDAG$Node.class'"
+    os.system(make2)
+    os.remove(options.sdir+'manifest.txt')
+
+
+def sifter_patch(options):
+    '''
+    Patch needed for Sifter-T v1.2 compatibility
+    '''
+    patch = False
+    with open(options.sdir+'util/PFunGODAG.java', 'r') as handle:
+        # read a list of lines into data
+        data = handle.readlines()
+    if data[767] != '        if(m.equals("IEA")) return 0.1;\n':
+        data[767] = '        if(m.equals("IEA")) return 0.1;\n'
+        data[768] = '        else if(m.equals("IMP")) return 0.9;\n'
+        data[769] = '        else if(m.equals("IPI")) return 0.8;\n'
+        data[770] = '        else if(m.equals("ISS")) return 0.7;\n'
+        data[771] = '        else if(m.equals("IDA")) return 0.6;\n'
+        data[772] = '        else if(m.equals("IEP")) return 0.5;\n'
+        data[773] = '        else if(m.equals("TAS")) return 0.4;\n'
+        data[774] = '        else if(m.equals("NAS")) return 0.3;\n'
+        data[775] = '        else if(m.equals("RCA")) return 0.2;\n'
+        with open(options.sdir+'util/PFunGODAG.java', 'w') as handle:
+            handle.writelines(data)
+        sifter_make_clean(options)
+        sifter_make(options)
+
+
+
 def check_sifter_files(options):
     '''
     Check if sifter2.0 files are on the sifter directory, and check if sifter 
     is correctly installed.
     '''
-    print "# Checking Sifter2.0 consistency...\n"
+    print "# Checking SIFTER consistency...\n"
     #checking SIFTER files
     handle = open("sifter-t_chk/sifter2.0_files.list1","r")
     for line in handle:
@@ -288,11 +340,11 @@ def check_notung(options):
     Check if Notung is present on Sifter-T directory.
     '''
     print "# Checking Notung...\n"
-    if not os.path.isfile(options.stdir+"notung/Notung.jar"):
-        print "Notung.jar is not present on the correct directory. This file "  \
-              "must be on \"notung/\" subdirectory of Sifter-T's folder. \nExiting..."
+    if not os.path.isfile(options.stdir+"Notung.jar"):
+        print "Notung.jar is not present on the actual directory. This file "  \
+              "must be on the same directory as Sifter-T's scripts. \nExiting..."
         sys.exit(1)
-    if not os.access(options.stdir+"notung/Notung.jar", os.R_OK):
+    if not os.access(options.stdir+"Notung.jar", os.R_OK):
         print "The actual user does not have READING access to Notung. "   \
               "\nExiting..." 
         sys.exit(1)
@@ -629,6 +681,13 @@ def _main():
         help="(Optional) Enables reconciliation for nucleotide or aminoacid "  \
              "sequences as input. Require \"--input_species\". "               \
              "(Default: No reconciliation.)")
+    parser.add_option("--extended_coverage", 
+        dest="coverage", 
+        default=False, 
+        action="store_true", 
+        help="(Optional) For families without any annotations except for IEA"  \
+             " evidence codes (and just for those families), enables IEA "  \
+             "evidence code. (Default: Disabled.)")
 
     (options, args) = parser.parse_args()
 
@@ -650,8 +709,9 @@ def _main():
     options = check_outdir(options)
     options = check_sifter_dir(options)
     options.stdir = os.path.abspath(os.getcwd())+"/"
-    check_siftert(options)
     check_sifter_files(options)
+    sifter_patch(options)
+    check_siftert(options)
     check_pfam_scan(options)
     check_fasttree(options)
     check_hmmer3()

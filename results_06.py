@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#  -*- coding: iso-8859-1 -*-  
+# -*- coding: iso-8859-1 -*-  
 
 ########## ########## ########### ########## ########## ########## ##########
 #  Sifter-T - Sifter framework for large scale Functional Annotation.       #
@@ -147,11 +147,26 @@ def get_noannot_ec(options):
     evidence codes.
     '''
     noannot_ec = set()
-    handle = open(options.outdir+"without_annotations_ec.txt","r")
-    for line in handle:
-        d = line.strip().split()
-        noannot_ec.add(d[0])
-    handle.close()
+    if options.coverage:
+        temp_set = set()
+        handle = open(options.outdir+"useful_pfam3.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            temp_set.add(d[0])
+        handle.close()
+ 
+        handle = open(options.outdir+"without_annotations_ec.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            noannot_ec.add(d[0])
+        handle.close()
+        noannot_ec = noannot_ec - temp_set
+    else:
+        handle = open(options.outdir+"without_annotations_ec.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            noannot_ec.add(d[0])
+        handle.close()
     return noannot_ec
 
 
@@ -176,11 +191,18 @@ def get_useful_pfam(options):
     Load a set of Protein Families that can be treated.
     '''
     useful_pfam = set()
-    handle = open(options.outdir+"useful_pfam.txt","r")
-    for line in handle:
-        d = line.strip().split()
-        useful_pfam.add(d[0])
-    handle.close()
+    if options.coverage:
+        handle = open(options.outdir+"useful_pfam3.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            useful_pfam.add(d[0])
+        handle.close()
+    else:
+        handle = open(options.outdir+"useful_pfam.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            useful_pfam.add(d[0])
+        handle.close()
     return useful_pfam
 
 
@@ -196,6 +218,54 @@ def get_useful_pfam_func(options, useful_pfam):
         useful_pfam_func[fam] = temp.strip().split()
         handle.close()
     return useful_pfam_func
+
+
+
+def get_maxcodeprior(options, fam):
+    '''
+    New IEA prior probability attributions (Sifter2.0 source):
+    IMP = 0.9
+    IPI = 0.8
+    ISS = 0.7
+    IDA = 0.6
+    IEP = 0.5
+    TAS = 0.4
+    NAS = 0.3
+    RCA = 0.2
+    IEA = 0.1
+    '''
+    handle = open(options.outdir+fam+"/"+fam+".pli", "r")
+    max_prior = 0
+    for line in handle:
+        if line.find("<MOC>") > 0:
+            if line.find("IMP") > 0:
+                if max_prior < 0.9:
+                    max_prior = 0.9
+            elif line.find("IPI") > 0:
+                if max_prior < 0.8:
+                    max_prior = 0.8
+            elif line.find("ISS") > 0:
+                if max_prior < 0.7:
+                    max_prior = 0.7
+            elif line.find("IDA") > 0:
+                if max_prior < 0.6:
+                    max_prior = 0.6
+            elif line.find("IEP") > 0:
+                if max_prior < 0.5:
+                    max_prior = 0.5
+            elif line.find("TAS") > 0:
+                if max_prior < 0.4:
+                    max_prior = 0.4
+            elif line.find("NAS") > 0:
+                if max_prior < 0.3:
+                    max_prior = 0.3
+            elif line.find("RCA") > 0:
+                if max_prior < 0.2:
+                    max_prior = 0.2
+            elif line.find("IEA") > 0:
+                if max_prior < 0.1:
+                    max_prior = 0.1
+    return max_prior
 
 
 def get_useful_pfam_query_prob(options, useful_pfam):
@@ -395,6 +465,10 @@ def write_report_txt(options, useful_pfam, querynames_conversion,
     handle.write("# \tEvidence Code(s) selected: \t"+str(options.experimental)+"\n") 
     handle.write("# \tSpecie's annotations removed: \t"+str(options.species)+"\n") 
     handle.write("# \tSpecies tree branche's annotations removed: \t"+str(options.branch)+"\n") 
+    if options.coverage:
+        handle.write("# \tExtended coverage:\t\tEnabled\n")
+    else:
+        handle.write("# \tExtended coverage:\t\tDisabled\n")
     if options.type == "nt":
         handle.write("# \tTranslation Table: \t\t"+str(options.translation)+"\n") 
     if options.reconciliation:
@@ -565,6 +639,10 @@ def create_report_tab(options, useful_pfam, querynames_conversion,
     handle.write("# \tEvidence Code(s) selected: \t"+str(options.experimental)+"\n") 
     handle.write("# \tSpecie's annotations removed: \t"+str(options.species)+"\n") 
     handle.write("# \tSpecies tree branche's annotations removed: \t"+str(options.branch)+"\n") 
+    if options.coverage:
+        handle.write("# \tExtended coverage:\t\tEnabled\n")
+    else:
+        handle.write("# \tExtended coverage:\t\tDisabled\n")
     if options.type == "nt":
         handle.write("# \tTranslation Table: \t\t"+str(options.translation)+"\n") 
     if options.reconciliation:
@@ -717,6 +795,9 @@ def _main():
     if options.type != "pf":
         print "    "+options.outdir+"REPORT_alt.txt\n"
     print "    "+options.outdir+"REPORT.tab\n"
+
+    for fam in useful_pfam:
+        print fam, get_maxcodeprior(options, fam)
 
     sys.exit()
 

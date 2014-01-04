@@ -128,6 +128,7 @@ def dbprep(options):
     from dbprep import obo2_functionontology
     from dbprep import write_go_names
     from dbprep import prepare_hmm
+    from dbprep import rm_no_annot_files
 
     print "\n###  --------------------------------------------------  ###" 
     print "###                  Database Preparation.               ###" 
@@ -184,11 +185,12 @@ def dbprep(options):
     annot_gene_set = get_annot_gene_set(options)
     write_annot_gene_list(options, annot_gene_set)
     write_pf_noannot(options, annot_gene_set, fullfamilyset)
+    rm_no_annot_files(options)
     del(fullfamilyset)
-    write_gene_sp(options, annot_gene_set)
-    del(annot_gene_set)
     summ_tax1(options)
     summ_tax2(options)
+    write_gene_sp(options, annot_gene_set)
+    del(annot_gene_set)
     obo2_functionontology(options)
     write_go_names(options)
     prepare_hmm(options)
@@ -219,6 +221,8 @@ def param_chk():
     from param_chk_00 import check_reconciliation
     from param_chk_00 import check_species
     from param_chk_00 import check_threads
+    from param_chk_00 import sifter_patch
+    from param_chk_00 import check_siftert
 
 #    from param_chk_00 import check_databases'''
 
@@ -237,9 +241,9 @@ def param_chk():
               "Evidence Codes (TAS, NAS); Curator Statement Evidence Codes "   \
               "(IC, ND); Automatically-assigned Evidence Codes (IEA). Each "   \
               "code must be included separately. Ex: \"-i EXP -i IDA -i IPI\"."\
-              " For all Experimental Evidence Codes, use \"-i ALL_EXP\". "       \
+              "For all Experimental Evidence Codes, use \"-i ALL_EXP\"."       \
               "For all Computational Analysis Evidence Codes, use \"-i COMP_ALL\"."\
-              " For all Evidence Codes, except IEA, use \"-i ABIEA\". "          \
+              "For all Evidence Codes, except IEA, use \"-i ABIEA\". "          \
               "For all Evidence Codes, use \"-i ALL\". "                       
 
     #Defines input variables
@@ -334,6 +338,13 @@ def param_chk():
         help="(Optional) Enables reconciliation for nucleotide or aminoacid "  \
              "sequences as input. Require \"--input_species\". "               \
              "(Default: No reconciliation.)")
+    parser.add_option("--extended_coverage", 
+        dest="coverage", 
+        default=False, 
+        action="store_true", 
+        help="(Optional) For families without any annotations except for IEA"  \
+             " evidence codes (and just for those families), enables IEA "  \
+             "evidence code. (Default: Disabled.)")
     (options, args) = parser.parse_args()
     print "\n###  --------------------------------------------------  ###" 
     print "###         Running SIFTER-T. Initial checking...        ###" 
@@ -350,6 +361,8 @@ def param_chk():
     options = check_sifter_dir(options)
     options.stdir = os.path.abspath(os.getcwd())+"/"
     check_sifter_files(options)
+    sifter_patch(options)
+    check_siftert(options)
     check_pfam_scan(options)
     check_fasttree(options)
     check_hmmer3()
@@ -397,6 +410,8 @@ def ntaapfam(options):
     from ntaapfam_01 import align_sequences
     from ntaapfam_01 import write_pfam_list
     from ntaapfam_01 import clean_annot_genes_all
+    from ntaapfam_01 import write_pfam_list2
+    from ntaapfam_01 import write_pfam_list3
 
     print "\n###  --------------------------------------------------  ###" 
     print "###      Sequence and Multiple Alignment Preparation     ###" 
@@ -419,11 +434,16 @@ def ntaapfam(options):
 
     pfam_genes = get_pfam_genes(options, (set(input_pfam_genes) - no_annot))
 
-    annot_genes_all = get_annot_genes_all(options)
+    annot_genes_all, annot_genes_iea = get_annot_genes_all(options)
 
     annot_genes_all = annot_genes_all - get_forbidden_sp_gene(options, 
                            get_sp_branch_set(options, get_sp_desc_anc(options)),
                            get_sp_gene(options), annot_genes_all)
+
+    if options.coverage:
+        annot_genes_iea = annot_genes_iea - get_forbidden_sp_gene(options, 
+                           get_sp_branch_set(options, get_sp_desc_anc(options)),
+                           get_sp_gene(options), annot_genes_iea)
 
     no_annot2 = get_no_annot2(options, pfam_genes, no_annot, annot_genes_all)
 
@@ -431,12 +451,19 @@ def ntaapfam(options):
 
     annot_genes_all = clean_annot_genes_all(annot_genes_all, pfam_genes, useful_pfam)
 
+    if options.coverage:
+        annot_genes_iea = clean_annot_genes_all(annot_genes_iea, pfam_genes, no_annot2)
+
     del(no_annot)
-    del(no_annot2)
     del(pfam_genes)
 
     if options.type == "nt" or options.type == "aa":
-        input_genes_pfam, handle_pf = get_input_genes_pfam__handle_pf(options,
+        if options.coverage:
+            useful_pfam2 = useful_pfam | no_annot2
+            input_genes_pfam, handle_pf = get_input_genes_pfam__handle_pf(options,
+                                                  useful_pfam2, input_pfam_genes)
+        else:
+            input_genes_pfam, handle_pf = get_input_genes_pfam__handle_pf(options,
                                                   useful_pfam, input_pfam_genes)
         write_input_ntaa(options, input_genes_pfam, handle_pf)
         del(input_genes_pfam)
@@ -444,9 +471,20 @@ def ntaapfam(options):
     elif options.type == "pf":
         write_fasta_pf(options, useful_pfam)
     multi_write_selected_pfam_genes(options, useful_pfam, annot_genes_all)
+    if options.coverage:
+        multi_write_selected_pfam_genes(options, no_annot2, annot_genes_iea)
     useful_pfam = clean_useful_pfam(options, useful_pfam)
+    if options.coverage:
+        no_annot2 = clean_useful_pfam(options, no_annot2)
+    if options.type == "aa" or options.type == "nt":
+        print "# Aligning sequences from the following protein families: \n"
     align_sequences(options, useful_pfam)
+    if options.coverage:
+        align_sequences(options, no_annot2)
     write_pfam_list(options, useful_pfam)
+    if options.coverage:
+        write_pfam_list2(options, no_annot2)
+        write_pfam_list3(options,(set(useful_pfam) | set(no_annot2)))
     return None
 
 
@@ -482,13 +520,20 @@ def gentree(options):
     print "\n###  --------------------------------------------------  ###" 
     print "###                Building Gene Trees                   ###" 
     print "###  --------------------------------------------------  ###\n" 
-
+ 
     familylist = list()
-    handle = open(options.outdir+"useful_pfam.txt","r")
-    for line in handle:
-        d = line.strip().split()
-        familylist.append(d[0])
-    handle.close()
+    if options.coverage:
+        handle = open(options.outdir+"useful_pfam3.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            familylist.append(d[0])
+        handle.close()
+    else:
+        handle = open(options.outdir+"useful_pfam.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            familylist.append(d[0])
+        handle.close()
 
     gene_sp = dict()
     with open(options.dbdir+"gene_sp.list", 'r') as handle:
@@ -537,21 +582,28 @@ def reconciliation(options):
         anc_desc[desc_anc[item]].add(item)
 
     familylist = list()
-    with open(options.outdir+"useful_pfam.txt","r") as handle:
+    if options.coverage:
+        handle = open(options.outdir+"useful_pfam3.txt","r")
         for line in handle:
             d = line.strip().split()
             familylist.append(d[0])
+        handle.close()
+    else:
+        with open(options.outdir+"useful_pfam.txt","r") as handle:
+            for line in handle:
+                d = line.strip().split()
+                familylist.append(d[0])
 
     i = 0
     for fam in familylist:
         buid_species_tree(options, fam, desc_anc, anc_desc)
-        i +=1
+        i += 1
         if i >= 10:
             print ""
             i = 0
     if i > 0:
-            print ""
-            i = 0
+        print ""
+        i = 0
 
     print "\n###  --------------------------------------------------  ###" 
     print "###                  Reconciling Trees                   ###" 
@@ -578,11 +630,18 @@ def runsifter(options):
              "--with-ipi --with-iss --with-rca --with-tas --with-nas"
 
     familylist = list()
-    handle = open(options.outdir+"useful_pfam.txt","r")
-    for line in handle:
-        d = line.strip().split()
-        familylist.append(d[0])
-    handle.close()
+    if options.coverage:
+        handle = open(options.outdir+"useful_pfam3.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            familylist.append(d[0])
+        handle.close()
+    else:
+        handle = open(options.outdir+"useful_pfam.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            familylist.append(d[0])
+        handle.close()
 
     sifter_multi(options, familylist, scodes)
     return None

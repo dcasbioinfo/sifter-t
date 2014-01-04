@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#  -*- coding: iso-8859-1 -*-  
+# -*- coding: iso-8859-1 -*-  
 
 ########## ########## ########### ########## ########## ########## ##########
 #  Sifter-T - Sifter framework for large scale Functional Annotation.       #
@@ -271,10 +271,17 @@ def _main():
         anc_desc[desc_anc[item]].add(item)
 
     familylist = list()
-    with open(options.outdir+"useful_pfam.txt","r") as handle:
+    if options.coverage:
+        handle = open(options.outdir+"useful_pfam3.txt","r")
         for line in handle:
             d = line.strip().split()
             familylist.append(d[0])
+        handle.close()
+    else:
+        with open(options.outdir+"useful_pfam.txt","r") as handle:
+            for line in handle:
+                d = line.strip().split()
+                familylist.append(d[0])
 
     i = 0
     for fam in familylist:

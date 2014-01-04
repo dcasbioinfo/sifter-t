@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#  -*- coding: iso-8859-1 -*-  
+# -*- coding: iso-8859-1 -*-  
 
 ########## ########## ########### ########## ########## ########## ##########
 #  Sifter-T - Sifter framework for large scale Functional Annotation.       #
@@ -199,11 +199,18 @@ def _main():
              "--with-ipi --with-iss --with-rca --with-tas --with-nas"
 
     familylist = list()
-    handle = open(options.outdir+"useful_pfam.txt","r")
-    for line in handle:
-        d = line.strip().split()
-        familylist.append(d[0])
-    handle.close()
+    if options.coverage:
+        handle = open(options.outdir+"useful_pfam3.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            familylist.append(d[0])
+        handle.close()
+    else:
+        handle = open(options.outdir+"useful_pfam.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            familylist.append(d[0])
+        handle.close()
 
     sifter_multi(options, familylist, scodes)
     sys.exit()

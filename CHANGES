@@ -1,3 +1,20 @@
+Release 1.2
+-----------
+
+# New Features
+
+    * An experimental option, --extended_coverage
+    * Evidence codes prior definition
+
+# Changes
+
+    * Reduced pre-processed database disk usage.
+
+# Bug Fixes
+
+    * None.
+
+
 Release 1.1
 -----------
 

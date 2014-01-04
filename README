@@ -15,7 +15,7 @@ Sifter-T expands "Sifter2.0" usability, scalability and functionality:
 If you use Sifter-T in work contributing to a sientific publication, we ask 
 that you cite our application note:
 
-Almeida-e-Silva D.C. and Vêncio R.Z.N. 2013. Sifter-T: A scalable framework for
+Almeida-e-Silva D.C. and Vêncio R.Z.N. Sifter-T: A scalable framework for
 phylogenomic probabilistic protein domain functional annotation. (In preparation...)
 
 
@@ -97,7 +97,7 @@ System Requirements
     Require:
     * Hmmer3.0 - http://hmmer.janelia.org/
       * Must be on $PATH
-      * Caution: Hmmer Beta versions are not supported by PfamScan.
+      * Caution: Hmmer unstable versions are not supported by PfamScan.
     * perl 5+ - http://www.perl.org/
       * Must be on $PATH
     * bioperl - http://www.bioperl.org/
@@ -230,9 +230,9 @@ Options:
                         Curator Statement Evidence Codes (IC, ND);
                         Automatically-assigned Evidence Codes (IEA). Each code
                         must be included separately. Ex: "-i EXP -i IDA -i
-                        IPI". For all Experimental Evidence Codes, use "-i
-                        ALL_EXP". For all Computational Analysis Evidence
-                        Codes, use "-i COMP_ALL". For all Evidence Codes,
+                        IPI".For all Experimental Evidence Codes, use "-i
+                        ALL_EXP".For all Computational Analysis Evidence
+                        Codes, use "-i COMP_ALL".For all Evidence Codes,
                         except IEA, use "-i ABIEA". For all Evidence Codes,
                         use "-i ALL".
   -x CODE               (Optional) Remove specific species annotation from the
@@ -260,6 +260,10 @@ Options:
   --reconciliation      (Optional) Enables reconciliation for nucleotide or
                         aminoacid sequences as input. Require "--
                         input_species". (Default: No reconciliation.)
+  --extended_coverage   (Optional) For families without any annotations except
+                        for IEA evidence codes (and just for those families),
+                        enables IEA evidence code. (Default: Disabled.)
+
 
 ---------- ---------- --------- --------- --------- --------- --------- ---------
 
@@ -389,7 +393,8 @@ Options:
       --input_species=9606
       --sifter-cutoff=0.01
       --threads=3
-        
+      --extended_coverage
+
   Explaining the extra parameters:
     <evidence codes selection, using a shortcut for all but IEA Evidence codes 
      selection. Using IEA evidence code will increase substantially the running 
@@ -416,6 +421,10 @@ Options:
     <number of threads to use. default is all.>
       --threads=3
 
+    <Perform annotation using IEA evidence for the families without annotations 
+     due to incomplete evidence code selection. Diminish time, memory usage and
+     processor usage in comparison to option "-i IEA" >
+      --extended_coverage
 
 
 

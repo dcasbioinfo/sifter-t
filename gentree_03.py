@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#  -*- coding: iso-8859-1 -*-  
+# -*- coding: iso-8859-1 -*-  
 
 ########## ########## ########### ########## ########## ########## ##########
 #  Sifter-T - Sifter framework for large scale Functional Annotation.       #
@@ -157,7 +157,7 @@ def _main():
     Main function for standalone usage.
     '''
     #Defines usage and help
-    usage = "\n     %prog -d DIR"
+    usage = "\n    v %prog -d DIR"
     description = "Gene tree preparation for SIFTER pipeline usage."
     #Defines input variables
     parser = OptionParser(usage=usage, 
@@ -188,11 +188,18 @@ def _main():
     print "###  --------------------------------------------------  ###\n" 
 
     familylist = list()
-    handle = open(options.outdir+"useful_pfam.txt","r")
-    for line in handle:
-        d = line.strip().split()
-        familylist.append(d[0])
-    handle.close()
+    if options.coverage:
+        handle = open(options.outdir+"useful_pfam3.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            familylist.append(d[0])
+        handle.close()
+    else:
+        handle = open(options.outdir+"useful_pfam.txt","r")
+        for line in handle:
+            d = line.strip().split()
+            familylist.append(d[0])
+        handle.close()
 
     gene_sp = dict()
     with open(options.dbdir+"gene_sp.list", 'r') as handle:

@@ -198,7 +198,7 @@ def pfam_scan_multi(options):
             ""+str(options.pcut)+" -cpu "+str(options.threads)+" -fasta " \
             ""+os.path.abspath(options.outdir).replace(" ","\ ")+"/query.fasta"\
             " -outfile "+os.path.abspath(options.outdir).replace(" ","\ ")+"" \
-            "/query_temp.pfam -d " \
+            "/query_temp0.pfam -d " \
             ""+os.path.abspath(options.dbdir).replace(" ","\ "))
         return 1
     elif n_seq >= 100 or options.threads > 1:
@@ -309,13 +309,16 @@ def get_annot_genes_all(options):
     '''
     print "# Loading GOA annotations...\n"
     annot_genes_all = set()
+    annot_genes_iea = set()
     handle = open(options.dbdir+"summary_gene_association.goa_uniprot","r")
     for line in handle:
         d = line.strip().split()
         if d[2] in options.experimental:
             annot_genes_all.add(d[3])
+        if "IEA" not in options.experimental and options.coverage:
+            annot_genes_iea.add(d[3])
     handle.close()
-    return annot_genes_all
+    return annot_genes_all, annot_genes_iea
 
 
 def get_no_annot(options, pfam_genes):
@@ -360,8 +363,11 @@ def get_no_annot2(options, pfam_genes, no_annot, annot_genes_all):
     handle = open(options.outdir+"without_annotations_ec.txt","w")
     if len(no_annot2) > 0:
         i = 0
-        print "# Sifter-T will not treat the following families due to " \
+        if not options.coverage:
+            print "# Sifter-T will not treat the following families due to " \
               "incomplete selection of\n# evidence codes annotations: \n"
+        else:
+            print "# Sifter-T will try to extend coverage to the following protein families: \n"        
         for pf in no_annot2:
             print pf,
             handle.write(pf+"\n")
@@ -585,8 +591,6 @@ def align_sequences(options, useful_pfam):
     '''
     Align input sequences with the processed Protein Family.
     '''
-    if options.type == "aa" or options.type == "nt":
-        print "# Aligning sequences from the following protein families: \n"
     i = 0
     for pf in useful_pfam:
         if options.type == "aa" or options.type == "nt":
@@ -603,7 +607,8 @@ def align_sequences(options, useful_pfam):
         if i == 10:
             i = 0
             print ""
-    print "\n"
+    if not options.coverage:
+        print "\n"
 
 
 def write_pfam_list(options, useful_pfam):
@@ -630,6 +635,54 @@ def write_pfam_list(options, useful_pfam):
         handle.write(item[1]+"\n")
     handle.close()
 
+
+def write_pfam_list2(options, useful_pfam):
+    '''
+    Sort useful_pfam from largest to smallest family and store in 
+    "useful_pfam.txt".
+    '''
+    useful_pfam_list = list()
+    for pf in useful_pfam:
+        i = 0
+        handle = open(options.outdir+pf+"/aligned.fasta", "r")
+        for line in handle:
+            if line[0] == ">":
+                i = i + 1
+        handle.close()
+        if i > 0:
+            useful_pfam_list.append((i, pf))
+
+    useful_pfam_list.sort()
+    useful_pfam_list.reverse()
+
+    handle = open(options.outdir+"useful_pfam2.txt","w")
+    for item in useful_pfam_list:
+        handle.write(item[1]+"\n")
+    handle.close()
+
+def write_pfam_list3(options, useful_pfam):
+    '''
+    Sort useful_pfam from largest to smallest family and store in 
+    "useful_pfam.txt".
+    '''
+    useful_pfam_list = list()
+    for pf in useful_pfam:
+        i = 0
+        handle = open(options.outdir+pf+"/aligned.fasta", "r")
+        for line in handle:
+            if line[0] == ">":
+                i = i + 1
+        handle.close()
+        if i > 0:
+            useful_pfam_list.append((i, pf))
+
+    useful_pfam_list.sort()
+    useful_pfam_list.reverse()
+
+    handle = open(options.outdir+"useful_pfam3.txt","w")
+    for item in useful_pfam_list:
+        handle.write(item[1]+"\n")
+    handle.close()
 
 def clean_annot_genes_all(annot_genes_all, pfam_genes, useful_pfam):
     '''
@@ -711,24 +764,39 @@ def _main():
 
     pfam_genes = get_pfam_genes(options, (set(input_pfam_genes) - no_annot))
 
-    annot_genes_all = get_annot_genes_all(options)
+    annot_genes_all, annot_genes_iea = get_annot_genes_all(options)
 
     annot_genes_all = annot_genes_all - get_forbidden_sp_gene(options, 
                            get_sp_branch_set(options, get_sp_desc_anc(options)),
                            get_sp_gene(options), annot_genes_all)
 
+    if options.coverage:
+        annot_genes_iea = annot_genes_iea - get_forbidden_sp_gene(options, 
+                           get_sp_branch_set(options, get_sp_desc_anc(options)),
+                           get_sp_gene(options), annot_genes_iea)
+
     no_annot2 = get_no_annot2(options, pfam_genes, no_annot, annot_genes_all)
 
+#    if options.coverage:
+#        useful_pfam = (set(input_pfam_genes) - (no_annot))
+#    else:
     useful_pfam = (set(input_pfam_genes) - (no_annot | no_annot2))
 
     annot_genes_all = clean_annot_genes_all(annot_genes_all, pfam_genes, useful_pfam)
 
+    if options.coverage:
+        annot_genes_iea = clean_annot_genes_all(annot_genes_iea, pfam_genes, no_annot2)
+
     del(no_annot)
-    del(no_annot2)
     del(pfam_genes)
 
     if options.type == "nt" or options.type == "aa":
-        input_genes_pfam, handle_pf = get_input_genes_pfam__handle_pf(options,
+        if options.coverage:
+            useful_pfam2 = useful_pfam | no_annot2
+            input_genes_pfam, handle_pf = get_input_genes_pfam__handle_pf(options,
+                                                  useful_pfam2, input_pfam_genes)
+        else:
+            input_genes_pfam, handle_pf = get_input_genes_pfam__handle_pf(options,
                                                   useful_pfam, input_pfam_genes)
         write_input_ntaa(options, input_genes_pfam, handle_pf)
         del(input_genes_pfam)
@@ -736,9 +804,20 @@ def _main():
     elif options.type == "pf":
         write_fasta_pf(options, useful_pfam)
     multi_write_selected_pfam_genes(options, useful_pfam, annot_genes_all)
+    if options.coverage:
+        multi_write_selected_pfam_genes(options, no_annot2, annot_genes_iea)
     useful_pfam = clean_useful_pfam(options, useful_pfam)
+    if options.coverage:
+        no_annot2 = clean_useful_pfam(options, no_annot2)
+    if options.type == "aa" or options.type == "nt":
+        print "# Aligning sequences from the following protein families: \n"
     align_sequences(options, useful_pfam)
+    if options.coverage:
+        align_sequences(options, no_annot2)
     write_pfam_list(options, useful_pfam)
+    if options.coverage:
+        write_pfam_list2(options, no_annot2)
+        write_pfam_list3(options,(set(useful_pfam) | set(no_annot2)))
     sys.exit()
 
 if __name__ == '__main__':

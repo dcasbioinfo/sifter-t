@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#  -*- coding: iso-8859-1 -*-  
+# -*- coding: iso-8859-1 -*-  
 
 ########## ########## ########### ########## ########## ########## ##########
 #  Sifter-T - Sifter framework for large scale Functional Annotation.       #
@@ -136,7 +136,8 @@ def recover_stockholm(options):
     outf.close()
     infpf.close()
     if i > 0:
-        print "\n"
+        print ""
+    print ""
     return fullfamilyset
 
 
@@ -220,6 +221,7 @@ def stockfasta_multi(options, fullfamilyset):
     lastline = True
     if q.qsize() == 0:
         lastline = False
+
     memsize = get_memsize()
     if (memsize/1572864.) <= 2.:
         num_proc = 1
@@ -377,7 +379,7 @@ def summary_goa(options, fullgeneset, ac_gene):
         if os.path.exists(options.dbdir+"summary_gene_association.goa_uniprot_temp"):
             os.remove(options.dbdir+"summary_gene_association.goa_uniprot_temp")
         print counter_not, "not-annotations were removed.\n"
-    
+    print ""
 
 
 def get_annot_gene_set(options):
@@ -493,7 +495,8 @@ def write_gene_sp(options, annot_gene_set):
     if os.path.exists(options.dbdir+"delnodes.dmp"):
         with open(options.dbdir+"delnodes.dmp") as handle_delnodes:
             for line in handle_delnodes:
-                delnodes.add(line.strip().split()[0])
+                d = line.strip().split()
+                delnodes.add(d[0])
 
     merged_nodes = {}
     if os.path.exists(options.dbdir+"merged.dmp"):
@@ -545,6 +548,22 @@ def write_pf_noannot(options, annot_gene_set, fullfamilyset):
     for pf in no_annot:
         handle.write(pf+"\n")
     handle.close()
+
+
+def rm_no_annot_files(options):
+    '''
+    Remove families without annotations from the stored database.
+    '''
+    noannot_list = set()
+
+    with open(options.dbdir+"pf_noannot.list") as handle:
+        for line in handle:
+            noannot_list.add(line.strip().split()[0])
+
+    import os
+    for item in noannot_list:
+        os.remove(options.dbdir+"align/"+item+".fasta")
+        os.remove(options.dbdir+"align/gene_list/"+item+".gene")
 
 
 def is_number(s):
@@ -704,7 +723,7 @@ def prepare_hmm(options):
     '''
     print "# Preparing PFam's HMM alignments...\n"
     os.system("hmmpress "+os.path.abspath(options.dbdir).replace(" ","\ ")+"/Pfam-A.hmm")
-    print ""
+
 
 
 def _main():
@@ -818,6 +837,7 @@ def _main():
     annot_gene_set = get_annot_gene_set(options)
     write_annot_gene_list(options, annot_gene_set)
     write_pf_noannot(options, annot_gene_set, fullfamilyset)
+    rm_no_annot_files(options)
     del(fullfamilyset)
     summ_tax1(options)
     summ_tax2(options)
