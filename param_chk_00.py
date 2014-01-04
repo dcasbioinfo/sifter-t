@@ -215,7 +215,7 @@ def sifter_make_clean(options):
     '''
     Equivalent to "make clean" on sifter2.0 directory
     '''
-    make_clean_list ['PFun.class', 'PFunLibrary.class', 'util/Filefinder.class', 'util/PFunDAG.class', 'util/PfunFamily.class', 'util/PFunGODAG.class', 'util/PfunProtein.class', 'util/PFunUtil.class', 'util/Settings.class', 'stat/NodeProbability.class', 'stat/PFunLearn.class', 'stat/PVector.class', 'stat/PMatrix.class', 'stat/PFunTransMatrix.class', 'stat/PowerSet.class', 'stat/PFunTree.class', 'sifter.jar']
+    make_clean_list = ['PFun.class', 'PFunLibrary.class', 'util/Filefinder.class', 'util/PFunDAG.class', 'util/PfunFamily.class', 'util/PFunGODAG.class', 'util/PfunProtein.class', 'util/PFunUtil.class', 'util/Settings.class', 'stat/NodeProbability.class', 'stat/PFunLearn.class', 'stat/PVector.class', 'stat/PMatrix.class', 'stat/PFunTransMatrix.class', 'stat/PowerSet.class', 'stat/PFunTree.class', 'sifter.jar']
     for item in make_clean_list:
         if os.path.exists(options.sdir+item):
             os.remove(options.sdir+item)
