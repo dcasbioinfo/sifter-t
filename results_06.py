@@ -796,9 +796,6 @@ def _main():
         print "    "+options.outdir+"REPORT_alt.txt\n"
     print "    "+options.outdir+"REPORT.tab\n"
 
-    for fam in useful_pfam:
-        print fam, get_maxcodeprior(options, fam)
-
     sys.exit()
 
 if __name__ == '__main__':
