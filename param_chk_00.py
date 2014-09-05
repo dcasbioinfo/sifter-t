@@ -1,16 +1,15 @@
 #! /usr/bin/env python
-# -*- coding: iso-8859-1 -*-  
 
 ########## ########## ########### ########## ########## ########## ##########
 #  Sifter-T - Sifter framework for large scale Functional Annotation.       #
 #                                                                           #
-#  Copyright 2013 Almeida-e-Silva, D.C.; Vêncio, R.Z.N.                     #
+#  Copyright 2013 Almeida-e-Silva, D.C.; Vencio, R.Z.N.                     #
 #  All rights reserved.                                                     #
 #                                                                           #
 #  If you use this work or any portion thereof in published work,           #
 #  please cite it as:                                                       #
 #                                                                           #
-#     Almeida-e-Silva D.C. and Vêncio R.Z.N. Sifter-T: A functional         #
+#     Almeida-e-Silva D.C. and Vencio R.Z.N. Sifter-T: A functional         #
 #     framework for large-scale probabilistic protein domain annotation.    #
 #     (In preparation...)                                                   #
 #                                                                           #
@@ -270,7 +269,7 @@ def check_sifter_files(options):
     '''
     print "# Checking SIFTER consistency...\n"
     #checking SIFTER files
-    handle = open("sifter-t_chk/sifter2.0_files.list1","r")
+    handle = open(options.stdir+"sifter-t_chk/sifter2.0_files.list1","r")
     for line in handle:
         tmp_str = line.strip().split()
         if not os.path.exists(options.sdir+tmp_str[0]):
@@ -278,7 +277,7 @@ def check_sifter_files(options):
             sys.exit(1)
     handle.close()
     #checking SIFTER proper instalation
-    handle = open("sifter-t_chk/sifter2.0_files.list2","r")
+    handle = open(options.stdir+"sifter-t_chk/sifter2.0_files.list2","r")
     for line in handle:
         tmp_str = line.strip().split()
         if not os.path.exists(options.sdir+tmp_str[0]):
@@ -482,9 +481,15 @@ def check_species(options):
         with open(options.dbdir+"summary_taxonomy.txt") as handle:
             for line in handle:
                 sp_set.add(line.strip().split()[0])
-        for taxid in (set(options.species) | set(options.branch) | set([options.input_species])):
+        for taxid in (set(options.species) | set(options.branch)):
             if taxid not in sp_set:
                 print "The TaxonomyID %s is not a valid NCBI Taxonomy number." % taxid
+                sys.exit(1)
+        for taxid in (set([options.input_species])):
+            if options.reconciliation and taxid not in sp_set:
+                print "%s is not a valid \"--input_species\" value while "             \
+                "reconciliation is on. Type \"-h\" for help. "                   \
+                "\nExiting..." % str(taxid)
                 sys.exit(1)
 
 

@@ -1,16 +1,15 @@
 #! /usr/bin/env python
-# -*- coding: iso-8859-1 -*-  
 
 ########## ########## ########### ########## ########## ########## ##########
 #  Sifter-T - Sifter framework for large scale Functional Annotation.       #
 #                                                                           #
-#  Copyright 2013 Almeida-e-Silva, D.C.; Vêncio, R.Z.N.                     #
+#  Copyright 2013 Almeida-e-Silva, D.C.; Vencio, R.Z.N.                     #
 #  All rights reserved.                                                     #
 #                                                                           #
 #  If you use this work or any portion thereof in published work,           #
 #  please cite it as:                                                       #
 #                                                                           #
-#     Almeida-e-Silva D.C. and Vêncio R.Z.N. Sifter-T: A functional         #
+#     Almeida-e-Silva D.C. and Vencio R.Z.N. Sifter-T: A functional         #
 #     framework for large-scale probabilistic protein domain annotation.    #
 #     (In preparation...)                                                   #
 #                                                                           #
@@ -746,6 +745,11 @@ def _main():
         print "\n# Extra arguments. Wrong usage. Exiting... \n"
         sys.exit(1)
 
+    if not options.dir:
+        print "Not all needed parameters were specified. Type \"-h\" for help."\
+              " \nExiting..."
+        sys.exit(1)
+
     if not os.path.exists(options.dir+"options.pk"):
         print "\"options.pk\" not found.\nExiting..."
         sys.exit(1)
@@ -795,6 +799,9 @@ def _main():
     if options.type != "pf":
         print "    "+options.outdir+"REPORT_alt.txt\n"
     print "    "+options.outdir+"REPORT.tab\n"
+
+    for fam in useful_pfam:
+        print fam, get_maxcodeprior(options, fam)
 
     sys.exit()
 

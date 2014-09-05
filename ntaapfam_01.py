@@ -1,16 +1,15 @@
 #! /usr/bin/env python
-# -*- coding: iso-8859-1 -*-  
 
 ########## ########## ########### ########## ########## ########## ##########
 #  Sifter-T - Sifter framework for large scale Functional Annotation.       #
 #                                                                           #
-#  Copyright 2013 Almeida-e-Silva, D.C.; Vêncio, R.Z.N.                     #
+#  Copyright 2013 Almeida-e-Silva, D.C.; Vencio, R.Z.N.                     #
 #  All rights reserved.                                                     #
 #                                                                           #
 #  If you use this work or any portion thereof in published work,           #
 #  please cite it as:                                                       #
 #                                                                           #
-#     Almeida-e-Silva D.C. and Vêncio R.Z.N. Sifter-T: A functional         #
+#     Almeida-e-Silva D.C. and Vencio R.Z.N. Sifter-T: A functional         #
 #     framework for large-scale probabilistic protein domain annotation.    #
 #     (In preparation...)                                                   #
 #                                                                           #
