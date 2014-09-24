@@ -412,6 +412,8 @@ def check_evcodes(options):
                 print "%s is not a valid Evidence Code. Type \"-h\" for help." \
                       " \nExiting..." % exp
                 sys.exit(1)
+        elif exp in codes:
+            exp_set.add(exp)        
     options.experimental = list(exp_set)
     return options
 
@@ -730,7 +732,7 @@ def _main():
     check_pfam_cutoff(options)
     check_species(options)
     check_threads(options)
-
+ 
 
     ## Registering "options" variable
     pickle.dump(options, file(options.outdir+"options.pk", "w"))
