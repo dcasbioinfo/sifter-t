@@ -59,7 +59,7 @@ Bugs
 ====
 
 We try to deliver a robust package, however, bugs inevitably pop up. If you are
-having problems that might be caused by a bug please do report the bug. 
+having problems that might be caused by a bug please do report it.
 
   You can send a bug report to the authors:
 
@@ -162,7 +162,7 @@ Databases Requirements
  - Files "merged.dmp" and "delnodes.dmp" from "taxdump.tar.gz" file:
         <ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz>
 
-* These files must be uncompressed and placed at the same directory. This "database"
+* These files must be uncompressed and placed in the same directory. This "database"
   directory is one of Sifter-T's parameters.
 
 * Uncompressed Gene Ontology file must be renamed to "gene_ontology.1_2.obo"
@@ -189,7 +189,7 @@ and running the main script:
     
     $ python sifter-t.py -t XX -f FILE -o DIR -d DIR -s DIR -i CODE [options]
 
-Alternatively you can use independent scripts (in order):
+Alternatively, you can use independent scripts (in order):
 
   * Check main parameters, files and create "options.pk" for other scripts usage:
     $ python param_chk_00.py -t XX -f FILE -o DIR -d DIR -s DIR -i CODE [options]
@@ -216,7 +216,7 @@ Alternatively you can use independent scripts (in order):
 Typical usage
 =============
 
-* Running "sifter-t.py -h" (help) the software shows:
+* When running "sifter-t.py -h" (help) the software shows:
 
 ---------- ---------- --------- --------- --------- --------- --------- ---------
 Usage: 
@@ -226,7 +226,7 @@ This script reads a nucleotide or protein multifasta FILE, translates in 6
 frames, identifies the PFAM ids associated to each frame, build a tree based
 on PFAM alignments and evidence codes, run SIFTER to propagate information
 from families annotated to families of interest and returns a list of
-annotations and his probabilities.
+annotations and its probabilities.
 
 Options:
   --version             show program's version number and exit
@@ -287,7 +287,7 @@ Options:
 ---------- ---------- --------- --------- --------- --------- --------- ---------
 
 
- For example purpose I will assume the following:
+ As an example, let's assume the following:
     * Sifter2.0 directory 
         /home/user/sifter2.0/
     * "databases" directory 
@@ -343,7 +343,7 @@ Options:
      for this purpose>
       -d /home/user/SifterDB/ 
 
-    <path for the "Sifter2.0" directory. must be properlly installed.>
+    <path for the "Sifter2.0" directory. must be properly installed.>
       -s /home/user/sifter2.0/
  
     <evidence codes selection, according to GO - http://www.geneontology.org/GO.evidence.shtml>
@@ -378,8 +378,8 @@ Options:
 
     <remove annotations from all species in a taxonomic branch, according to NCBI 
      Taxonomy codes>
-    <in the case of procariotes the removal of green plants (33090) and metazoans 
-     (33208) branch is highly advantageous for annotation quality. In this example
+    <in the case of procariotes, the removal of green plants (33090) and metazoans 
+     (33208) branch is highly advantageous for annotation quality. In this example,
      we removed the Eucariotes (2759) branch.>
       -b 2759
 
@@ -473,11 +473,11 @@ Output Stucture
     Probability - Sifter2.0 returns a list of probabilities for a list of
     functions. Sifter-T shows only the functions (according to GO) with
     probabilities above the cutoff. The probability can be read as "The 
-    probability of the identified domain have the function [name of the
+    probability of the identified domain having the function [name of the
     function] given the Protein Family structure and annotations. Sometimes  
     you can find probabilities "0.999999999999". It means that this 
-    particular Protein Family have only one GO number annotated along the tree,
-    so the probability of the identified domain have the function X, given that
+    particular Protein Family has only one GO number annotated along the tree,
+    so the probability of the identified domain having the function X, given that
     this is the only function on the tree, is almost 1.
 
     GO Code - The Gene Ontology code for the annotated function.
@@ -485,7 +485,7 @@ Output Stucture
     GO Name - The Gene Ontology full name for the annotated GO code.
 
 
- * The "REPORT.txt" file have 5 blocks of information:
+ * The "REPORT.txt" file has 5 blocks of information:
         1 - Header
         2 - Genes without associated protein family - Sifter can not
             annotate those genes
@@ -525,7 +525,7 @@ Output Stucture
         1 - Header
         2 - Annotated genes
 
-    The annotated genes shows the follloing structure for aminoacid input:
+    The annotated genes show the following structure for aminoacid input:
     [protein family code]
         [gene name]|[start position]-[stop position] 
     		PROB_MAX	GO	GO_DESCRIPTION
@@ -563,33 +563,33 @@ included in the package:
 
     $ python sifter-t.py -t pf -f test/hundred_families_site.txt -o [output folder] -d [database directory] -s [sifter2.0 directory] -i EXP_ALL
 
-There is another version of the huundred families dataset in "test" folder. If you
+There is another version of the hundred families dataset in "test" folder. If you
 download from the supplemental material of "Sifter2.0" paper, there are some minor 
 differences between it and the website version. Both "hundred families dataset" are 
 included in "test" folder.
 In the end you will find some subdirectories inside [output folder]. Each 
-subdirectory is named regarding a protein family, and have a set of intermediate
+subdirectory is named regarding a protein family, and has a set of intermediate
 files. The files "PF_____.nhx" and "PF_____.pli" for each family must be equivalent
 to the same files in the hundred families dataset from sifter2.0 website.
 
 You can go further and build REPORT files for the original "hundred families dataset".
-For this you should replace the builded files for the original ones. I've included a 
+For this you should replace the built files for the original ones. I have included a 
 script to help you in this task:
 
-    $ python hundred_families_test.py -i [original] -o [builded]
+    $ python hundred_families_test.py -i [original] -o [built]
 
-It removes the Sifter2.0 annotation files for the builded hundred families output
+It removes the Sifter2.0 annotation files for the built hundred families output
 directory and rename "REPORT.tab" and "REPORT.txt" to "old_REPORT.tab" and
 "old_REPORT.txt". Next, you must run the script that automates Sifter2.0 annotation:
 
     $ python runsifter_05.py -d [output dir]
 
-And last, create again the report files:
+Lastly, create the report files once more:
 
     $ python results_06.py -d [output dir]
     
 Although this process is somewhat time consuming, you can easily compare the 
-original and the builded annotations.
+original and the built annotations.
 
 
 

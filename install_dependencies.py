@@ -102,22 +102,29 @@ def download_files(options):
 #    current_dir = options.dir.replace(" ","\ ")
     os.chdir(options.dir)
     #Biopython, Java, Bioperl
-    print "# Downloading and installing Biopython, Java and Bioperl...\n"
-    os.system("sudo apt-get -qq --force-yes install python-biopython python-pip openjdk-6-jre openjdk-7-jre bioperl wget tar unzip build-essential w3m gzip grep make sed")
+    print "\n# Downloading and installing Biopython, Java and Bioperl...\n"
+    if options.pause:
+        raw_input("Press Enter to continue...")
+    os.system("sudo apt-get -qq --force-yes install python-biopython python-pip openjdk-6-jre openjdk-7-jre openjdk-6-jdk openjdk-7-jdk bioperl wget tar unzip build-essential w3m gzip grep make sed")
     try: 
         from Bio.Alphabet import IUPAC
     except:
         raise Exception("Can't load Biophyton. Exiting...")
 
+
     #CPAN packages
-    print "# Downloading and installing perl packages...\n"
+    print "\n# Downloading and installing perl packages...\n"
+    if options.pause:
+        raw_input("Press Enter to continue...")
     check_program("perl")
     os.system("sudo perl -MCPAN -e 'install CPAN'")
     os.system("sudo perl -MCPAN -e 'install Moose'")
     os.system("sudo perl -MCPAN -e 'install Data::Printer'")
 
     #Dentropy
-    print "# Downloading and installing Dendropy...\n"
+    print "\n# Downloading and installing Dendropy...\n"
+    if options.pause:
+        raw_input("Press Enter to continue...")
     check_program("pip")
     os.system("sudo pip install dendropy --quiet")
 
@@ -127,13 +134,17 @@ def download_files(options):
         raise Exception("Can't load Dendropy. Exiting...")
 
     #FastTree
-    print "# Downloading and installing FastTree...\n"
+    print "\n# Downloading and installing FastTree...\n"
+    if options.pause:
+        raw_input("Press Enter to continue...")
     check_program("wget")
     os.system("wget -q -nv http://meta.microbesonline.org/fasttree/FastTree")
     os.system("chmod u+x FastTree")
 
     #PfamScan
-    print "# Downloading and installing PfamScan...\n"
+    print "\n# Downloading and installing PfamScan...\n"
+    if options.pause:
+        raw_input("Press Enter to continue...")
     check_program("tar")
     os.system("wget -q -nv ftp://ftp.sanger.ac.uk/pub/databases/Pfam/Tools/PfamScan.tar.gz") 
     os.system("tar -zxf PfamScan.tar.gz")
@@ -142,7 +153,9 @@ def download_files(options):
     os.system("mv PfamScan/pfam_scan.pl ./ ")
 
     #Sifter2.0
-    print "# Downloading and installing Sifter2.0...\n"
+    print "\n# Downloading and installing Sifter2.0...\n"
+    if options.pause:
+        raw_input("Press Enter to continue...")
     check_program("make")
     os.system("wget -q -nv http://sifter.berkeley.edu/code/sifter2.0.tar.gz")
     os.system("tar -zxf sifter2.0.tar.gz")
@@ -152,7 +165,9 @@ def download_files(options):
     os.system("mv sifter2.0 sifter")
 
     #Notung
-    print "# Downloading and installing Notung...\n"
+    print "\n# Downloading and installing Notung...\n"
+    if options.pause:
+        raw_input("Press Enter to continue...")
     check_program("unzip")
     os.system("wget -q -nv http://lampetra.compbio.cs.cmu.edu/Notung/distributions/Notung-2.6.zip")
     os.system("unzip -qq Notung-2.6.zip")
@@ -164,7 +179,9 @@ def download_files(options):
     check_program("sed")
     #Hmmer
     if not check_hmmer3() or options.force:
-        print "# Downloading and installing Hmmer3...\n"
+        print "\n# Downloading and installing Hmmer3...\n"
+        if options.pause:
+            raw_input("Press Enter to continue...")
         os.system('''w3m ftp://selab.janelia.org/pub/software/hmmer3/CURRENT | grep -i linux | grep -i x86_64 | sed "s/ /\\t/g" | cut -f 1 > temp.txt''')
         handle = open("temp.txt", "r")
         files = handle.readlines()[0].strip()
@@ -184,7 +201,9 @@ def download_files(options):
 
     #MAFFT
     if not check_mafft() or options.force:
-        print "# Downloading and installing Mafft...\n"
+        print "\n# Downloading and installing Mafft...\n"
+        if options.pause:
+            raw_input("Press Enter to continue...")
         os.system('''w3m http://mafft.cbrc.jp/alignment/software/changelog.html | grep "^v" | head -n 1 | sed "s/ /\\t/g" | cut -f 1 | sed "s/v//g" > temp.txt''')
         handle = open("temp.txt", "r")
         version = handle.readlines()[0].strip()
@@ -223,6 +242,11 @@ def _main():
         action="store_true", 
         dest="force", 
         default = False)
+    parser.add_option("-p", "--pause", 
+        help="(Optional) Pause between installations. Helps track potential error messages. (default False)", 
+        action="store_true", 
+        dest="pause", 
+        default = False)
     (options, args) = parser.parse_args()
 
     if len(args) > 0:
@@ -256,7 +280,6 @@ def _main():
         options.dir = options.dir+"/"    
     
     check_dir(options)
-   ###############
     remove_former_files(options)
     download_files(options)
     
