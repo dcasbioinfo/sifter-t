@@ -26,8 +26,10 @@ The primary home page for Sifter-T is at:
 
     http://labpib.fmrp.usp.br/methods/sifter-t/
 
-It also hosts a link for a simple webserver where you can upload your data and 
-get Sifter-T's annotation. 
+It also hosts a link for a simple Sifter-T webserver where you can upload your data and 
+get Sifter-T's annotation:
+
+    http://labpib.fmrp.usp.br/methods/sifter-t/online/
 
 The Sifter-T source code is version-controlled using "Git", and the "Sifter-T 
 Git repository <https://github.com/dcasbioinfo/sifter-t.git>" can be cloned by 
@@ -125,6 +127,10 @@ System Requirements
     Require:
     * Must be on $PATH
 
+
+Automatic Dependency Installer
+==============================
+
 * We prepared a simple automatic dependency installer. It was tested only on 
     Ubuntu 12.04, but it might work on other Ubuntu versions as well. If you
     have a different Operating System, we recomend the manual installation. The 
@@ -167,16 +173,21 @@ Databases Requirements
 
 * Uncompressed Gene Ontology file must be renamed to "gene_ontology.1_2.obo"
 
+
+Automatic Database Downloader
+=============================
+
 * We prepared a simple automatic database downloader. It was tested only on 
     Ubuntu 12.04, but it might work on other Ubuntu versions as well. If you
     have a different Operating System, we recomend the manual download. The 
-    command line for the automatic download is:
+    command line for the automatic download is ("DIR" is the full path for 
+    "database" directory):
 
     $ python download_db.py -d DIR
 
 * After download, these files must be prepared with "dbprep.py" script prior to 
-  "sifter-t.py" execution. You can run using the following command ("DIR" is the
-  full path for "database" directory):
+    "sifter-t.py" execution. You can run using the following command ("DIR" is the
+    full path for "database" directory):
 
     $ python dbprep.py -d DIR
 

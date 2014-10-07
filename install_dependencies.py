@@ -22,7 +22,7 @@
 
 """
 
-import os, sys
+import os, sys, urllib
 from optparse import OptionParser
 
 
@@ -66,6 +66,7 @@ def check_program(name):
         prog = os.path.join(directory, name)
         if os.path.exists(prog):
             return prog
+    return False
 
 def check_hmmer3():
     '''
@@ -82,8 +83,9 @@ def check_hmmer3():
        not check_program("hmmsearch") or \
        not check_program("phmmer") or \
        not check_program("jackhmmer"):
-        print "HMMER3 is not installed or is not on $PATH. \nExiting..." 
-        sys.exit(1)
+        return False
+    else:
+        return True
 
 def check_mafft():
     '''
@@ -91,8 +93,9 @@ def check_mafft():
     '''
     print "# Checking MAFFT...\n"
     if not check_program("mafft"):
-        print "MAFFT is not installed or is not on $PATH. \nExiting..." 
-        sys.exit(1)
+        return False
+    else:
+        return True
 
 
 def download_files(options):
@@ -105,27 +108,64 @@ def download_files(options):
     print "\n# Downloading and installing Biopython, Java and Bioperl...\n"
     if options.pause:
         raw_input("Press Enter to continue...")
-    os.system("sudo apt-get -qq --force-yes install python-biopython python-pip openjdk-6-jre openjdk-7-jre openjdk-6-jdk openjdk-7-jdk bioperl wget tar unzip build-essential w3m gzip grep make sed")
+    if not check_program("apt-get"):
+        print "'apt-get' is not installed or is not on $PATH. \nExiting..." 
+        sys.exit(1)
+    if not check_program("sudo"):
+        print "'sudo' is not installed or is not on $PATH. \nExiting..." 
+        sys.exit(1)
+    os.system("sudo apt-get -qq --force-yes update")
+    os.system("sudo apt-get -qq --force-yes install python python-biopython python-pip openjdk-6-jre openjdk-7-jre openjdk-6-jdk openjdk-7-jdk perl bioperl tar unzip build-essential w3m grep gzip make sed")
+    if not check_program("javac"):
+        print "'javac' (package openjdk-6-jdk) was not correctly installed or is not on $PATH. It is required for Sifter installation. \nExiting..." 
+        sys.exit(1)
     try: 
         from Bio.Alphabet import IUPAC
     except:
         raise Exception("Can't load Biophyton. Exiting...")
+
+    if not check_program("tar"):
+        print "'tar' (package tar) was not correctly installed or is not on $PATH. It is required for automatic installation. \nExiting..." 
+        sys.exit(1)
+
+    if not check_program("make"):
+        print "'make' (package make) was not correctly installed or is not on $PATH. It is required for automatic installation. \nExiting..." 
+        sys.exit(1)
+
+    if not check_program("unzip"):
+        print "'unzip' (package unzip) was not correctly installed or is not on $PATH. It is required for automatic installation. \nExiting..." 
+        sys.exit(1)
+
+    if not check_program("sed"):
+        print "'sed' (package sed) was not correctly installed or is not on $PATH. It is required for automatic installation. \nExiting..." 
+        sys.exit(1)
+
+    if not check_program("perl"):
+        print "'perl' (package perl) was not correctly installed or is not on $PATH. It is required for automatic installation. \nExiting..." 
+        sys.exit(1)
+
+    if not check_program("w3m"):
+        print "'w3m' (package w3m) was not correctly installed or is not on $PATH. It is required for automatic HMMER 3 installation. \nExiting..." 
+        sys.exit(1)
 
 
     #CPAN packages
     print "\n# Downloading and installing perl packages...\n"
     if options.pause:
         raw_input("Press Enter to continue...")
-    check_program("perl")
     os.system("sudo perl -MCPAN -e 'install CPAN'")
-    os.system("sudo perl -MCPAN -e 'install Moose'")
-    os.system("sudo perl -MCPAN -e 'install Data::Printer'")
+    if not os.system("perl -MMoose -e 1"):
+        os.system("sudo perl -MCPAN -e 'install Moose'")
+    if not os.system("perl -MData::Printer -e 1"):
+        os.system("sudo perl -MCPAN -e 'install Data::Printer'")
 
     #Dentropy
     print "\n# Downloading and installing Dendropy...\n"
     if options.pause:
         raw_input("Press Enter to continue...")
-    check_program("pip")
+    if not check_program("pip"):
+        print "'pip' (package python-pip) was not correctly installed or is not on $PATH. It is required for automatic Dendropy installation. \nExiting..." 
+        sys.exit(1)
     os.system("sudo pip install dendropy --quiet")
 
     try: 
@@ -137,16 +177,14 @@ def download_files(options):
     print "\n# Downloading and installing FastTree...\n"
     if options.pause:
         raw_input("Press Enter to continue...")
-    check_program("wget")
-    os.system("wget -q -nv http://meta.microbesonline.org/fasttree/FastTree")
+    urllib.urlretrieve("http://meta.microbesonline.org/fasttree/FastTree", "FastTree")
     os.system("chmod u+x FastTree")
 
     #PfamScan
     print "\n# Downloading and installing PfamScan...\n"
     if options.pause:
         raw_input("Press Enter to continue...")
-    check_program("tar")
-    os.system("wget -q -nv ftp://ftp.sanger.ac.uk/pub/databases/Pfam/Tools/PfamScan.tar.gz") 
+    urllib.urlretrieve("ftp://ftp.sanger.ac.uk/pub/databases/Pfam/Tools/PfamScan.tar.gz", "PfamScan.tar.gz")
     os.system("tar -zxf PfamScan.tar.gz")
     os.system("rm PfamScan.tar.gz")
     os.system("mv PfamScan/Bio ./ ")
@@ -156,27 +194,24 @@ def download_files(options):
     print "\n# Downloading and installing Sifter2.0...\n"
     if options.pause:
         raw_input("Press Enter to continue...")
-    check_program("make")
-    os.system("wget -q -nv http://sifter.berkeley.edu/code/sifter2.0.tar.gz")
-    os.system("tar -zxf sifter2.0.tar.gz")
-    os.system("rm sifter2.0.tar.gz")
-    os.system("make clean -i -B -s -C sifter2.0/")
-    os.system("make -i -B -s -C sifter2.0/")
-    os.system("mv sifter2.0 sifter")
+    if not os.path.exists("sifter/sifter.jar") or options.force:
+        urllib.urlretrieve("http://sifter.berkeley.edu/code/sifter2.0.tar.gz", "sifter2.0.tar.gz")
+        os.system("tar -zxf sifter2.0.tar.gz")
+        os.system("rm sifter2.0.tar.gz")
+        os.system("make -i -B -s -C sifter2.0/")
+        os.system("mv sifter2.0 sifter")
 
     #Notung
     print "\n# Downloading and installing Notung...\n"
     if options.pause:
         raw_input("Press Enter to continue...")
-    check_program("unzip")
-    os.system("wget -q -nv http://lampetra.compbio.cs.cmu.edu/Notung/distributions/Notung-2.6.zip")
-    os.system("unzip -qq Notung-2.6.zip")
-    os.system("mv Notung-2.6 notung")
-    os.system("mv notung/Notung-2.6.jar notung/Notung.jar")
-    os.system("rm Notung-2.6.zip")
+    if not os.path.exists("notung/Notung.jar") or options.force:
+        urllib.urlretrieve("http://lampetra.compbio.cs.cmu.edu/Notung/distributions/Notung-2.6.zip", "Notung-2.6.zip")
+        os.system("unzip -qq Notung-2.6.zip")
+        os.system("mv Notung-2.6 notung")
+        os.system("mv notung/Notung-2.6.jar notung/Notung.jar")
+        os.system("rm Notung-2.6.zip")
 
-    check_program("w3m")
-    check_program("sed")
     #Hmmer
     if not check_hmmer3() or options.force:
         print "\n# Downloading and installing Hmmer3...\n"
@@ -187,7 +222,7 @@ def download_files(options):
         files = handle.readlines()[0].strip()
         handle.close()
         os.system("rm temp.txt")
-        os.system("wget -q -nv ftp://selab.janelia.org/pub/software/hmmer3/CURRENT/"+files)
+        urllib.urlretrieve("ftp://selab.janelia.org/pub/software/hmmer3/CURRENT/"+files, files)
         os.system("tar -zxf "+files)
         hmmerdir = files.replace(".tar.gz","")
         os.chdir(hmmerdir)
@@ -209,7 +244,7 @@ def download_files(options):
         version = handle.readlines()[0].strip()
         handle.close()
         os.system("rm temp.txt")
-        os.system("wget -q -nv http://mafft.cbrc.jp/alignment/software/mafft-"+version+"-without-extensions-src.tgz")
+        urllib.urlretrieve("http://mafft.cbrc.jp/alignment/software/mafft-"+version+"-without-extensions-src.tgz", "mafft-"+version+"-without-extensions-src.tgz")
         os.system("tar -zxf mafft-"+version+"-without-extensions-src.tgz")
         mafftdir = "mafft-"+version+"-without-extensions"
         os.system("make clean -i -B -s -C "+mafftdir+"/core/")

@@ -269,6 +269,7 @@ def param_chk():
         metavar="/DIRECTORY/DIR/")
     parser.add_option("-s", "--sifterdirectory", 
         dest="sdir", 
+        default="./sifter/",
         help="Full path for the directory where SIFTER was prepared.", 
         metavar="/DIRECTORY/DIR/")
     parser.add_option("-i", 
