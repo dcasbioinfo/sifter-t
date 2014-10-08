@@ -789,6 +789,10 @@ def _main():
               "the specified directory. \nExiting..."
         sys.exit(1)
 
+    options.dbdir = os.path.abspath(options.dbdir)
+    if options.dbdir[-1] != "/":
+        options.dbdir = options.dbdir+"/"
+
     required_files = ["gene_association.goa_uniprot", "taxonomy.txt", 
                       "ncbi_taxonomy.obo", "delnodes.dmp", "merged.dmp", 
                       "uniprot_sprot.dat", "uniprot_trembl.dat", 
