@@ -50,6 +50,9 @@ except:
 from optparse import OptionParser
 import os
 import sys
+import gzip
+import zlib
+import bz2
 from multiprocessing import JoinableQueue
 from multiprocessing import Process
 import multiprocessing
@@ -724,6 +727,86 @@ def prepare_hmm(options):
     os.system("hmmpress "+os.path.abspath(options.dbdir).replace(" ","\ ")+"/Pfam-A.hmm")
 
 
+def compDecomp( compObj, srcName, dstName ):
+    source= file( srcName, "r" )
+    dest= file( dstName, "w" )
+    block= source.read( 2048 )
+    while block:
+        cBlock= compObj.compress( block )
+        dest.write(cBlock)
+        block= source.read( 2048 )
+    cBlock= compObj.flush()
+    dest.write( cBlock )
+    source.close()
+    dest.close()
+
+
+def compress_source_files (dbdir,unnecessary_files):
+    '''
+    Compress sorce database files - worker.
+    '''
+    import gzip, zlib, bz2, os
+    while True:
+        try:
+            dbfile = q.get(block=True, timeout=0.1)
+        except Empty:
+            break
+        else:
+            if os.path.exists(dbdir+dbfile) and not os.path.exists(dbdir+"source/"+dbfile+".gz"):
+                print "# Compressing file \""+dbfile+"\"..."
+                compObj1= zlib.compressobj()
+                compDecomp( compObj1, dbdir+dbfile, dbdir+"source/"+dbfile+".gz" )
+                if dbfile in unnecessary_files and os.path.exists(dbdir+dbfile) and os.path.exists(dbdir+"source/"+dbfile+".gz"):
+                    os.remove(dbdir+dbfile)
+            q.task_done()
+
+
+def compress_source_files_multi(options):
+    '''
+    Compress sorce database files - multithreading
+    '''
+    print "# Compressing post-processing unneeded database source files...\n"
+
+    compressible_files = ["gene_association.goa_uniprot", "taxonomy.txt", 
+                          "ncbi_taxonomy.obo", "delnodes.dmp", "merged.dmp", 
+                          "uniprot_sprot.dat", "uniprot_trembl.dat", 
+                          "gene_ontology.1_2.obo", "Pfam-A.hmm.dat", 
+                          "Pfam-A.hmm", "Pfam-A.full"]
+
+    unnecessary_files = ["gene_association.goa_uniprot", "taxonomy.txt", 
+                          "ncbi_taxonomy.obo", "delnodes.dmp", "merged.dmp", 
+                          "uniprot_sprot.dat", "uniprot_trembl.dat", 
+                          "gene_ontology.1_2.obo", "Pfam-A.full"]
+
+    dbdir = options.dbdir
+    file_size = list()
+    for dbfile in compressible_files:
+        if os.path.exists(dbdir+dbfile):
+            file_size.append((os.path.getsize(dbdir+dbfile), dbfile))
+    file_size.sort()
+    file_size.reverse()
+    for item in file_size:
+        if os.path.exists(dbdir+item[1]) \
+        and not os.path.exists(dbdir+"source/"+item[1]+".gz"):
+            q.put(item[1])
+
+    num_proc = multiprocessing.cpu_count()
+
+    if not os.path.exists(dbdir+"source/"):
+        os.mkdir(dbdir+"source/")
+
+    for i in range(num_proc):
+        proc = Process(target=compress_source_files, name='%i' % (i+1), args=(dbdir,unnecessary_files))
+        proc.start()
+
+    sleep(num_proc*0.2)
+    q.join()
+    sleep(num_proc*0.05)
+    if proc.is_alive() and q.empty():
+        sleep(num_proc*0.2)
+        if proc.is_alive() and q.empty():
+            proc.terminate()
+
 
 def _main():
     '''
@@ -755,6 +838,12 @@ def _main():
              " (default False)", 
         action="store_true", 
         dest="force", 
+        default = False)
+    parser.add_option("-c", "--compress", 
+        help="(Optional) Compress database source files."\
+             " (default False)", 
+        action="store_true", 
+        dest="compress", 
         default = False)
     parser.add_option("-t", "--threads", 
         dest="threads", 
@@ -849,6 +938,10 @@ def _main():
     obo2_functionontology(options)
     write_go_names(options)
     prepare_hmm(options)
+
+    if options.compress:
+        compress_source_files_multi(options)
+
     print "# Cleaning up and exiting..."
     sys.exit()
 
