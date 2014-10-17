@@ -522,7 +522,7 @@ def write_fasta_pf(options, useful_pfam):
     for pf in useful_pfam:
         if not os.path.exists(options.outdir+pf):
             os.mkdir(options.outdir+pf)
-            shutil.copy(options.dbdir+"align/"+pf.upper()+".fasta", 
+            shutil.move(options.dbdir+"align/"+pf.upper()+".fasta", 
                         options.outdir+pf+"/"+pf+".fasta")
 
 
@@ -538,15 +538,20 @@ def write_selected_pfam_genes(options, annot_genes_all):
         except Empty: 
             break
         else:
-            handle = open(options.dbdir+"align/"+pf.upper()+".fasta","r")
-            handle_out = open(options.outdir+pf+"/"+pf.upper()+".fasta", "w")
-            for nuc_rec in SeqIO.parse(handle, "fasta"):
-                if nuc_rec.id[0:nuc_rec.id.find("/")] in annot_genes_all:
-                    SeqIO.write(SeqRecord(seq = nuc_rec.seq, id = nuc_rec.id, 
-                        description = ""), handle_out, "fasta")
-            handle_out.close()
-            handle.close()
-            q.task_done()
+            if options.type == "pf":
+                shutil.copy(options.dbdir+"align/"+pf.upper()+".fasta", 
+                            options.outdir+pf+"/"+pf.upper()+".fasta")
+                q.task_done()
+            else:
+                handle = open(options.dbdir+"align/"+pf.upper()+".fasta","r")
+                handle_out = open(options.outdir+pf+"/"+pf.upper()+".fasta", "w")
+                for nuc_rec in SeqIO.parse(handle, "fasta"):
+                    if nuc_rec.id[0:nuc_rec.id.find("/")] in annot_genes_all:
+                        SeqIO.write(SeqRecord(seq = nuc_rec.seq, id = nuc_rec.id, 
+                            description = ""), handle_out, "fasta")
+                handle_out.close()
+                handle.close()
+                q.task_done()
 
 
 def multi_write_selected_pfam_genes(options, useful_pfam, annot_genes_all):

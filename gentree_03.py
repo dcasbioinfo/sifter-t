@@ -55,7 +55,10 @@ def clean_tree (options, fam, gene_sp):
                     spe = str(options.input_species)
                 else:
                     spe_di = di.replace("(", "")
-                    spe = gene_sp[spe_di[:spe_di.find(":")]]
+                    if options.type == "pf":
+                        spe = "131567"
+                    else:
+                        spe = gene_sp[spe_di[:spe_di.find(":")]]
                     species_set.add(spe)
                 if ')' in di:
                     direst = di[(di.find(")")+1):]

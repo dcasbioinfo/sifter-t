@@ -54,7 +54,7 @@ def run_sifter0 (options, java_options, scodes):
     ""+options.outdir.replace(" ","\ ")+fam.upper()+"/" \
     ""+fam+".pli --reconciled " \
     ""+options.outdir.replace(" ","\ ")+"" \
-    ""+fam.upper()+"/"+fam+".nhx -v -g --ontology " \
+    ""+fam.upper()+"/"+fam+".nhx -v -g --em --ontology " \
     ""+options.dbdir.replace(" ","\ ")+"function.ontology"\
     " --familyfile "+options.outdir.replace(" ","\ ")+"" \
     ""+fam.upper()+"/infer-"+fam.lower()+".fx --scale " \
@@ -100,7 +100,7 @@ def run_sifter1 (options, java_options, scodes):
     ""+options.outdir.replace(" ","\ ")+fam.upper()+"" \
     "/infer-"+fam.lower()+".fx --alpha " \
     ""+options.outdir.replace(" ","\ ")+fam.upper()+"" \
-    "/alpha-"+fam.lower()+".fx --truncation 1 --xvalidation --folds 10 -v " \
+    "/alpha-"+fam.lower()+".fx --truncation 1 --xvalidation --folds 20 -v " \
     "--ontology "+options.dbdir.replace(" ","\ ")+"" \
     "function.ontology "+scodes+" > " \
     ""+options.outdir.replace(" ","\ ")+fam.upper()+"/" \

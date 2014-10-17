@@ -562,7 +562,7 @@ You can use Sifter-T to reproduce the "hundred families dataset".
 For this you must download the Sifter-T needed files from the following databases:
     * Pfam v24: <ftp://ftp.sanger.ac.uk/pub/databases/Pfam/releases/Pfam24.0/>
     * GOA v80: <ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/old/UNIPROT/>
-    * GO 2010-03-01: <http://www.geneontology.org/ontology-archive/gene_ontology_edit.obo.2010-03-01.gz>
+    * GO 2010-03-01: <ftp://ftp.geneontology.org/go/ontology-archive/gene_ontology_edit.obo.2010-03-01.gz>
     * NCBI Taxonomy (OBO format): Latest version.
 
 After downloading and extracting the database files you must prepare them:

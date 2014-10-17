@@ -136,7 +136,7 @@ def check_input_file1(options):
                       "start with 'PF' or 'pf', followed by five "             \
                       "numbers." % options.file
                 sys.exit(1)
-            if not tmp_str in pfam_set:
+            if not tmp_str[0] in pfam_set:
                 print "The file %s is not valid. %s is not present on PFAM"    \
                       " database." % (options.file, tmp_str)
                 sys.exit(1)
