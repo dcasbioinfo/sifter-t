@@ -167,14 +167,14 @@ def check_outdir(options):
     if not os.path.isdir(options.outdir):        
         print options.outdir+" is not an existing directory.\n"
         create = raw_input("Create directory? [y/n]: ")
-        if create == "y":
+        if create.lower() == "y":
             try:
                 os.makedirs(options.outdir)
             except:
                 raise IOError("\nCould not create the specified directory."    \
                               " \nExiting...")
             print ""
-        elif create == "n":
+        elif create.lower() == "n":
             print "\nExiting..."
             sys.exit()
         elif create != "y" or create != "n":
@@ -535,9 +535,9 @@ def check_databases(options):
                   " they were not prepared for Sifter-T use yet."
             prepare = raw_input("Prepare them now? (it can take several "      \
                                 "minutes...) [y/n]: ")
-            if prepare == "y":
+            if prepare.lower() == "y":
                 os.system("python dbprep.py -d "+options.dbdir+" -f")
-            elif prepare == "n":
+            elif prepare.lower() == "n":
                 print "\nExiting..."
                 sys.exit(1)
             elif prepare != "y" or prepare != "n":
@@ -692,7 +692,7 @@ def _main():
     options = check_sifter_dir(options)
     options.stdir = os.path.abspath(os.getcwd())+"/"
     check_sifter_files(options)
-    sifter_patch(options)
+    #sifter_patch(options)
     check_siftert(options)
     check_pfam_scan(options)
     check_fasttree(options)

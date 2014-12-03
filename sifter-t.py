@@ -91,9 +91,9 @@ def check_databases(options):
                   " they were not prepared for Sifter-T use yet."
             prepare = raw_input("Prepare them now? (it can take several "      \
                                 "minutes...) [y/n]: ")
-            if prepare == "y":
+            if prepare.lower() == "y":
                 dbprep(options)
-            elif prepare == "n":
+            elif prepare.lower() == "n":
                 print "\nExiting..."
                 sys.exit(1)
             elif prepare != "y" or prepare != "n":

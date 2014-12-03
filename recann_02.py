@@ -169,6 +169,9 @@ def get_uniprots(options):
     codes = ["IPI", "IDA", "ISS", "TAS", "IMP", "NAS", "ND", "IGI", "IC", "EXP",
              "IEP", "RCA", "IGC", "ISO", "ISA", "ISM", "IEA", "IBA", "IBD"]
 
+    sift = set(["E","GOR","IC","IDA","IEA","IEP","IGC","IGI","IMP","IPI","ISS",
+            "NAS","ND","NR","P","RCA","TAS"])
+
     ec_mapping = {}
     handle = open(options.stdir+"prob_conversion.txt","r")
     for line in handle:
@@ -193,7 +196,7 @@ def get_uniprots(options):
     for line in handle:
         d = line.strip().split()
         if d[2] in options.experimental and d[3] not in forbidden_genes:
-            if d[2] in ec_convert:
+            if d[2] in ec_convert and d[2] not in sift:
                 d[2] = ec_convert[d[2]]
             try:
                 uniprots[d[3]].append((d[1], d[2]))
