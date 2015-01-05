@@ -692,7 +692,7 @@ def _main():
     options = check_sifter_dir(options)
     options.stdir = os.path.abspath(os.getcwd())+"/"
     check_sifter_files(options)
-    #sifter_patch(options)
+    sifter_patch(options)
     check_siftert(options)
     check_pfam_scan(options)
     check_fasttree(options)

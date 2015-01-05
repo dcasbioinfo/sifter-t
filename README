@@ -91,7 +91,7 @@ System Requirements
 
  - Dendropy - http://pythonhosted.org/DendroPy/
 
- - Sifter2.0 - http://sifter.berkeley.edu/
+ - Sifter2.0 - http://genome.cshlp.org/content/suppl/2011/07/21/gr.104687.109.DC1/sifter2.0.tar.gz
     Require:
     * Java 1.4.2+ - http://www.java.com/
    You must prepare "Sifter2.0" by extracting the downloaded file, entering in the 

@@ -195,7 +195,7 @@ def download_files(options):
     if options.pause:
         raw_input("Press Enter to continue...")
     if not os.path.exists("sifter/sifter.jar") or options.force:
-        urllib.urlretrieve("http://sifter.berkeley.edu/code/sifter2.0.tar.gz", "sifter2.0.tar.gz")
+        urllib.urlretrieve("http://genome.cshlp.org/content/suppl/2011/07/21/gr.104687.109.DC1/sifter2.0.tar.gz", "sifter2.0.tar.gz")
         os.system("tar -zxf sifter2.0.tar.gz")
         os.system("rm sifter2.0.tar.gz")
         os.system("make -i -B -s -C sifter2.0/")
