@@ -239,7 +239,7 @@ def download_files(options):
         print "\n# Downloading and installing Mafft...\n"
         if options.pause:
             raw_input("Press Enter to continue...")
-        os.system('''w3m http://mafft.cbrc.jp/alignment/software/changelog.html | grep "^v" | head -n 1 | sed "s/ /\\t/g" | cut -f 1 | sed "s/v//g" > temp.txt''')
+        os.system('''w3m http://mafft.cbrc.jp/alignment/software/changelog.html | grep "^v" | grep -v "only" | head -n 1 | sed "s/ /\\t/g" | cut -f 1 | sed "s/v//g" > temp.txt''')
         handle = open("temp.txt", "r")
         version = handle.readlines()[0].strip()
         handle.close()

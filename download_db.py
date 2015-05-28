@@ -64,7 +64,7 @@ def download_files(options):
     print "# Downloading taxdump.tar.gz...\n"
     if not os.path.exists(options.dir+"merged.dmp") or not os.path.exists(options.dir+"delnodes.dmp"):
         os.system("wget -q -nv ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz")
-        os.system("tar -zxf taxdump.tar.gz merged.dmp delnodes.dmp &")
+        os.system("tar -zxf taxdump.tar.gz merged.dmp delnodes.dmp")
         os.system("rm taxdump.tar.gz")
 
     #Gene Ontology
@@ -98,7 +98,7 @@ def download_files(options):
     print "# Downloading uniprot_trembl.dat...\n"
     if not os.path.exists(options.dir+"uniprot_trembl.dat"):
         os.system("wget -q -nv ftp://ftp.sanger.ac.uk/pub/databases/Pfam/current_release/uniprot_trembl.dat.gz")
-        os.system("gzip -d uniprot_trembl.dat.gz &")
+        os.system("gzip -d uniprot_trembl.dat.gz")
 
     print "# Downloading uniprot_sprot.dat...\n"
     if not os.path.exists(options.dir+"uniprot_sprot.dat"):

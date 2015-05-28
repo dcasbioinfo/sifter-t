@@ -914,6 +914,9 @@ def _main():
             sys.exit()
 
 
+    compress_source_files_multi(options)
+    sys.exit()
+
     remove_former_db(options)
     fullfamilyset = recover_stockholm(options)
     write_pfamlist(options, fullfamilyset)
