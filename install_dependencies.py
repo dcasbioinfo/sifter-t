@@ -115,7 +115,7 @@ def download_files(options):
         print "'sudo' is not installed or is not on $PATH. \nExiting..." 
         sys.exit(1)
     os.system("sudo apt-get -qq --force-yes update")
-    os.system("sudo apt-get -qq --force-yes install python python-biopython python-pip openjdk-6-jre openjdk-7-jre openjdk-6-jdk openjdk-7-jdk perl bioperl tar unzip build-essential w3m grep gzip make sed")
+    os.system("sudo apt-get -qq --force-yes install python python-biopython python-pip openjdk-6-jre openjdk-7-jre openjdk-6-jdk openjdk-7-jdk perl bioperl tar unzip build-essential w3m grep gzip make sed python-dev libpython-dev libevent-dev")
     if not check_program("javac"):
         print "'javac' (package openjdk-6-jdk) was not correctly installed or is not on $PATH. It is required for Sifter installation. \nExiting..." 
         sys.exit(1)
@@ -153,7 +153,7 @@ def download_files(options):
     print "\n# Downloading and installing perl packages...\n"
     if options.pause:
         raw_input("Press Enter to continue...")
-    os.system("sudo perl -MCPAN -e 'install CPAN'")
+    #os.system("sudo perl -MCPAN -e 'install CPAN'")
     if not os.system("perl -MMoose -e 1"):
         os.system("sudo perl -MCPAN -e 'install Moose'")
     if not os.system("perl -MData::Printer -e 1"):
@@ -166,7 +166,7 @@ def download_files(options):
     if not check_program("pip"):
         print "'pip' (package python-pip) was not correctly installed or is not on $PATH. It is required for automatic Dendropy installation. \nExiting..." 
         sys.exit(1)
-    os.system("sudo pip install dendropy --quiet")
+    os.system("sudo pip install dendropy==3.12.3 --quiet")
 
     try: 
         import dendropy
