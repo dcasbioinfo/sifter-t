@@ -82,32 +82,32 @@ def download_files(options):
     #PFam
     print "# Downloading Pfam-A.full...\n"
     if not os.path.exists(options.dir+"Pfam-A.full"):
-        os.system("wget -q -nv ftp://ftp.sanger.ac.uk/pub/databases/Pfam/current_release/Pfam-A.full.gz")
+        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.full.gz")
         os.system("gzip -d Pfam-A.full.gz &")
 
     print "# Downloading Pfam-A.hmm.dat...\n"
     if not os.path.exists(options.dir+"Pfam-A.hmm.dat"):
-        os.system("wget -q -nv ftp://ftp.sanger.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.dat.gz")
+        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.dat.gz")
         os.system("gzip -d Pfam-A.hmm.dat.gz &")
  
     print "# Downloading Pfam-A.hmm...\n"
     if not os.path.exists(options.dir+"Pfam-A.hmm"):
-        os.system("wget -q -nv ftp://ftp.sanger.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz")
+        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz")
         os.system("gzip -d Pfam-A.hmm.gz &")
 
     print "# Downloading uniprot_trembl.dat...\n"
     if not os.path.exists(options.dir+"uniprot_trembl.dat"):
-        os.system("wget -q -nv ftp://ftp.sanger.ac.uk/pub/databases/Pfam/current_release/uniprot_trembl.dat.gz")
+        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/uniprot_trembl.dat.gz")
         os.system("gzip -d uniprot_trembl.dat.gz")
 
     print "# Downloading uniprot_sprot.dat...\n"
     if not os.path.exists(options.dir+"uniprot_sprot.dat"):
-        os.system("wget -q -nv ftp://ftp.sanger.ac.uk/pub/databases/Pfam/current_release/uniprot_sprot.dat.gz")
+        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/uniprot_sprot.dat.gz")
         os.system("gzip -d uniprot_sprot.dat.gz")
 
     print "# Downloading taxonomy.txt...\n"
     if not os.path.exists(options.dir+"taxonomy.txt"):
-        os.system("wget -q -nv ftp://ftp.sanger.ac.uk/pub/databases/Pfam/current_release/database_files/taxonomy.txt.gz")
+        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/database_files/taxonomy.txt.gz")
         os.system("gzip -d taxonomy.txt.gz")
 
 
