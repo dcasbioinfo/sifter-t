@@ -15,8 +15,9 @@ Sifter-T expands "Sifter2.0" usability, scalability and functionality:
 If you use Sifter-T in work contributing to a sientific publication, we ask 
 that you cite our application note:
 
-Almeida-e-Silva D.C. and Vêncio R.Z.N. Sifter-T: A scalable framework for
-phylogenomic probabilistic protein domain functional annotation. (In preparation...)
+Almeida-e-Silva D.C. and Vêncio R.Z.N. (2015) SIFTER-T: A scalable and optimized 
+framework for the SIFTER phylogenomic method of probabilistic protein domain
+annotation. BioTechniques, Vol. 58, No. 3, March 2015, pp. 140–142
 
 
 Source Code Repository
@@ -36,6 +37,13 @@ Git repository <https://github.com/dcasbioinfo/sifter-t.git>" can be cloned by
 running:
 
     $ git clone git://github.com/dcasbioinfo/sifter-t.git
+
+Alternativelly you can download the zip file from GitHub: 
+   $ wget https://github.com/dcasbioinfo/sifter-t/archive/master.zip 
+
+And decompress using unzip: 
+   $ unzip master.zip                     
+
 
 
 Licence
@@ -83,7 +91,7 @@ System Requirements
 
  - Linux x86-64 
 
- - At least 8GB of RAM memory (+1GB/core if you have more than 4 cores)
+ - At least 10GB of RAM memory (+2GB/core if you have more than 4 cores)
 
  - Python 2.7, see http://www.python.org/ (Python 3.x support is still incomplete)
 
@@ -98,7 +106,7 @@ System Requirements
    extracted directory and typing on the terminal:
      $ make
 
- - PfamScan - ftp://ftp.sanger.ac.uk/pub/databases/Pfam/Tools/
+ - PfamScan - ftp://ftp.ebi.ac.uk/pub/databases/Pfam/Tools/
     Require:
     * Hmmer3.0 - http://hmmer.janelia.org/
       * Must be on $PATH
@@ -149,7 +157,7 @@ Databases Requirements
         <http://www.geneontology.org/GO.downloads.ontology.shtml>
 
  - PFam files:
-        <ftp://ftp.sanger.ac.uk/pub/databases/Pfam/current_release>
+        <ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release>
         * Pfam-A.full.gz
         * Pfam-A.hmm.dat.gz
         * Pfam-A.hmm.gz
@@ -158,12 +166,12 @@ Databases Requirements
         * database_files/taxonomy.txt.gz
 
  - GOA for Uniprot
-        <http://www.ebi.ac.uk/GOA/uniprot_release.html>
+        <ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/>
 
  - NCBI Taxonomy (OBO format)
-        <http://www.berkeleybop.org/ontologies/obo-all/ncbi_taxonomy/ncbi_taxonomy.obo>
+        <http://purl.obolibrary.org/obo/ncbitaxon.obo>
        * Alternatively at:
-        <http://www.obofoundry.org/cgi-bin/detail.cgi?id=ncbi_taxonomy>
+        <http://www.obofoundry.org/ontology/ncbitaxon.html>
 
  - Files "merged.dmp" and "delnodes.dmp" from "taxdump.tar.gz" file:
         <ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz>
