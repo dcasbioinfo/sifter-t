@@ -9,9 +9,10 @@
 #  If you use this work or any portion thereof in published work,           #
 #  please cite it as:                                                       #
 #                                                                           #
-#     Almeida-e-Silva D.C. and Vencio R.Z.N. Sifter-T: A functional         #
-#     framework for large-scale probabilistic protein domain annotation.    #
-#     (In preparation...)                                                   #
+#     Almeida-e-Silva D.C. and Vêncio R.Z.N. (2015) SIFTER-T: A scalable    #
+#     and optimized framework for the SIFTER phylogenomic method of         #
+#     probabilistic protein domain annotation. BioTechniques, Vol. 58,      #
+#     No. 3, March 2015, pp. 140–142                                        #
 #                                                                           #
 ########## ########## ########### ########## ########## ########## ##########
 
@@ -53,7 +54,6 @@ def check_databases(options):
         options.dbdir = options.dbdir+"/"
     if not os.path.exists(options.dbdir+"summary_gene_association.goa_uniprot") or \
        not os.path.exists(options.dbdir+"summary_ncbi_taxonomy.obo") or        \
-       not os.path.exists(options.dbdir+"annot_gene.list") or                  \
        not os.path.exists(options.dbdir+"align") or                            \
        not os.path.exists(options.dbdir+"summary_taxonomy.txt") or             \
        not os.path.exists(options.dbdir+"Pfam-A.hmm.h3f") or                   \
@@ -66,7 +66,6 @@ def check_databases(options):
        not os.path.exists(options.dbdir+"gene_sp.list") or                     \
        not os.path.exists(options.dbdir+"go_names.txt") or                     \
        not os.path.exists(options.dbdir+"pfam.list") or                        \
-       not os.path.exists(options.dbdir+"pfam_gene_ac.list") or                \
        not os.path.exists(options.dbdir+"function.ontology"):
         if not os.path.exists(options.dbdir+"gene_association.goa_uniprot") or \
            not os.path.exists(options.dbdir+"taxonomy.txt") or                 \
@@ -89,8 +88,8 @@ def check_databases(options):
         else:
             print "The basic database files are on the correct folder. However"\
                   " they were not prepared for Sifter-T use yet."
-            prepare = raw_input("Prepare them now? (it can take several "      \
-                                "minutes...) [y/n]: ")
+            prepare = raw_input("Prepare them now? (it might take a few "      \
+                                "hours...) [y/n]: ")
             if prepare.lower() == "y":
                 dbprep(options)
             elif prepare.lower() == "n":

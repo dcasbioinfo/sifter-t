@@ -9,9 +9,10 @@
 #  If you use this work or any portion thereof in published work,           #
 #  please cite it as:                                                       #
 #                                                                           #
-#     Almeida-e-Silva D.C. and Vencio R.Z.N. Sifter-T: A functional         #
-#     framework for large-scale probabilistic protein domain annotation.    #
-#     (In preparation...)                                                   #
+#     Almeida-e-Silva D.C. and Vêncio R.Z.N. (2015) SIFTER-T: A scalable    #
+#     and optimized framework for the SIFTER phylogenomic method of         #
+#     probabilistic protein domain annotation. BioTechniques, Vol. 58,      #
+#     No. 3, March 2015, pp. 140–142                                        #
 #                                                                           #
 ########## ########## ########### ########## ########## ########## ##########
 
@@ -151,7 +152,7 @@ def check_input_file1(options):
                           "\nExiting..." % nuc_rec.id
                     sys.exit(1)
         elif options.type == "aa":
-            wanted = set(IUPAC.ExtendedIUPACProtein.letters)
+            wanted = set(IUPAC.ExtendedIUPACProtein.letters) | set(["*"])
             for nuc_rec in SeqIO.parse(handle, "fasta"):
                 if not wanted.issuperset(nuc_rec.seq):
                     print "Aminoacid input sequence malformed: %s "            \
@@ -497,7 +498,6 @@ def check_databases(options):
         options.dbdir = options.dbdir+"/"
     if not os.path.exists(options.dbdir+"summary_gene_association.goa_uniprot") or \
        not os.path.exists(options.dbdir+"summary_ncbi_taxonomy.obo") or        \
-       not os.path.exists(options.dbdir+"annot_gene.list") or                  \
        not os.path.exists(options.dbdir+"align") or                            \
        not os.path.exists(options.dbdir+"summary_taxonomy.txt") or             \
        not os.path.exists(options.dbdir+"Pfam-A.hmm.h3f") or                   \
@@ -510,7 +510,6 @@ def check_databases(options):
        not os.path.exists(options.dbdir+"gene_sp.list") or                     \
        not os.path.exists(options.dbdir+"go_names.txt") or                     \
        not os.path.exists(options.dbdir+"pfam.list") or                        \
-       not os.path.exists(options.dbdir+"pfam_gene_ac.list") or                \
        not os.path.exists(options.dbdir+"function.ontology"):
         if not os.path.exists(options.dbdir+"gene_association.goa_uniprot") or \
            not os.path.exists(options.dbdir+"taxonomy.txt") or                 \

@@ -1,3 +1,20 @@
+Release 1.2.2
+-----------
+
+# New Features
+
+    * None.
+
+# Changes
+
+    * Database preparation updated for memory usage reduction.
+
+# Bug Fixes
+
+    * Source database's link update.
+
+
+
 Release 1.2
 -----------
 

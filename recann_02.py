@@ -10,9 +10,10 @@
 #  If you use this work or any portion thereof in published work,           #
 #  please cite it as:                                                       #
 #                                                                           #
-#     Almeida-e-Silva D.C. and Vencio R.Z.N. Sifter-T: A functional         #
-#     framework for large-scale probabilistic protein domain annotation.    #
-#     (In preparation...)                                                   #
+#     Almeida-e-Silva D.C. and Vêncio R.Z.N. (2015) SIFTER-T: A scalable    #
+#     and optimized framework for the SIFTER phylogenomic method of         #
+#     probabilistic protein domain annotation. BioTechniques, Vol. 58,      #
+#     No. 3, March 2015, pp. 140–142                                        #
 #                                                                           #
 ########## ########## ########### ########## ########## ########## ##########
 

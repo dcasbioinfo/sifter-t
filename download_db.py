@@ -9,9 +9,10 @@
 #  If you use this work or any portion thereof in published work,           #
 #  please cite it as:                                                       #
 #                                                                           #
-#     Almeida-e-Silva D.C. and Vencio R.Z.N. Sifter-T: A functional         #
-#     framework for large-scale probabilistic protein domain annotation.    #
-#     (In preparation...)                                                   #
+#     Almeida-e-Silva D.C. and Vêncio R.Z.N. (2015) SIFTER-T: A scalable    #
+#     and optimized framework for the SIFTER phylogenomic method of         #
+#     probabilistic protein domain annotation. BioTechniques, Vol. 58,      #
+#     No. 3, March 2015, pp. 140–142                                        #
 #                                                                           #
 ########## ########## ########### ########## ########## ########## ##########
 
@@ -79,35 +80,40 @@ def download_files(options):
         os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/gene_association.goa_uniprot.gz")
         os.system("gzip -d gene_association.goa_uniprot.gz &")
 
-    #PFam
+    #PFAM
+    #pfam_site = "ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/" - Major changes on PFam v29+. Using v28 due to compatibility issues.
+    pfam_site = "ftp://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam28.0/"
+
     print "# Downloading Pfam-A.full...\n"
     if not os.path.exists(options.dir+"Pfam-A.full"):
-        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.full.gz")
+        os.system("wget -q -nv "+pfam_site+"Pfam-A.full.gz")
         os.system("gzip -d Pfam-A.full.gz &")
 
     print "# Downloading Pfam-A.hmm.dat...\n"
     if not os.path.exists(options.dir+"Pfam-A.hmm.dat"):
-        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.dat.gz")
+        os.system("wget -q -nv "+pfam_site+"Pfam-A.hmm.dat.gz")
         os.system("gzip -d Pfam-A.hmm.dat.gz &")
  
     print "# Downloading Pfam-A.hmm...\n"
     if not os.path.exists(options.dir+"Pfam-A.hmm"):
-        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz")
+        os.system("wget -q -nv "+pfam_site+"Pfam-A.hmm.gz")
         os.system("gzip -d Pfam-A.hmm.gz &")
 
     print "# Downloading uniprot_trembl.dat...\n"
     if not os.path.exists(options.dir+"uniprot_trembl.dat"):
-        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/uniprot_trembl.dat.gz")
+        #uniprot_trembl.dat.gz not present on PFam v28 directory. Using alternative link.
+        #os.system("wget -q -nv "+pfam_site+"uniprot_trembl.dat.gz")
+        os.system("wget -q -nv ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.dat.gz")
         os.system("gzip -d uniprot_trembl.dat.gz")
 
     print "# Downloading uniprot_sprot.dat...\n"
     if not os.path.exists(options.dir+"uniprot_sprot.dat"):
-        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/uniprot_sprot.dat.gz")
+        os.system("wget -q -nv "+pfam_site+"uniprot_sprot.dat.gz")
         os.system("gzip -d uniprot_sprot.dat.gz")
 
     print "# Downloading taxonomy.txt...\n"
     if not os.path.exists(options.dir+"taxonomy.txt"):
-        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/database_files/taxonomy.txt.gz")
+        os.system("wget -q -nv "+pfam_site+"database_files/taxonomy.txt.gz")
         os.system("gzip -d taxonomy.txt.gz")
 
 
