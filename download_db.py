@@ -77,8 +77,9 @@ def download_files(options):
     #GOA
     print "# Downloading gene_association.goa_uniprot...\n"
     if not os.path.exists(options.dir+"gene_association.goa_uniprot"):
-        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/gene_association.goa_uniprot.gz")
-        os.system("gzip -d gene_association.goa_uniprot.gz &")
+        os.system("wget -q -nv ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz")
+        os.system("gzip -d goa_uniprot_all.gaf.gz")
+        os.system("mv goa_uniprot_all.gaf gene_association.goa_uniprot")
 
     #PFAM
     #pfam_site = "ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/" - Major changes on PFam v29+. Using v28 due to compatibility issues.
