@@ -15,7 +15,7 @@
 #     No. 3, March 2015, pp. 140-142                                        #
 #                                                                           #
 ########## ########## ########### ########## ########## ########## ##########
-
+ 
 """
  * Quick and dirty Sifter-T's software dependencies download and install.
 
@@ -116,7 +116,17 @@ def download_files(options):
         print "'sudo' is not installed or is not on $PATH. \nExiting..." 
         sys.exit(1)
     os.system("sudo apt-get -qq --force-yes update")
-    os.system("sudo apt-get -qq --force-yes install python python-biopython python-pip openjdk-6-jre openjdk-7-jre openjdk-6-jdk openjdk-7-jdk perl bioperl tar unzip build-essential w3m grep gzip make sed python-dev libpython-dev libevent-dev")
+    os.system("sudo apt-get -qq --force-yes install python python-biopython python-pip perl bioperl tar unzip build-essential w3m grep gzip make sed python-dev libpython-dev libevent-dev")
+    if not check_program("javac"):
+        os.system("sudo apt-get -qq --force-yes install openjdk-9-jre openjdk-9-jdk")
+    if not check_program("javac"):
+        os.system("sudo apt-get -qq --force-yes install openjdk-8-jre openjdk-8-jdk")
+    if not check_program("javac"):
+        os.system("sudo apt-get -qq --force-yes install openjdk-7-jre openjdk-7-jdk")
+    if not check_program("javac"):
+        os.system("sudo apt-get -qq --force-yes install openjdk-6-jre openjdk-6-jdk")
+
+
     if not check_program("javac"):
         print "'javac' (package openjdk-6-jdk) was not correctly installed or is not on $PATH. It is required for Sifter installation. \nExiting..." 
         sys.exit(1)
@@ -167,7 +177,9 @@ def download_files(options):
     if not check_program("pip"):
         print "'pip' (package python-pip) was not correctly installed or is not on $PATH. It is required for automatic Dendropy installation. \nExiting..." 
         sys.exit(1)
-    os.system("sudo pip install dendropy==3.12.3 --quiet")
+    import pip
+    pip.main(['install', 'dendropy==3.12.3'])
+#    os.system("sudo pip install dendropy==3.12.3 --quiet")
 
     try: 
         import dendropy
@@ -185,7 +197,7 @@ def download_files(options):
     print "\n# Downloading and installing PfamScan...\n"
     if options.pause:
         raw_input("Press Enter to continue...")
-    urllib.urlretrieve("ftp://ftp.sanger.ac.uk/pub/databases/Pfam/Tools/PfamScan.tar.gz", "PfamScan.tar.gz")
+    urllib.urlretrieve("ftp://ftp.ebi.ac.uk/pub/databases/Pfam/Tools/PfamScan.tar.gz", "PfamScan.tar.gz")
     os.system("tar -zxf PfamScan.tar.gz")
     os.system("rm PfamScan.tar.gz")
     os.system("mv PfamScan/Bio ./ ")
@@ -218,12 +230,13 @@ def download_files(options):
         print "\n# Downloading and installing Hmmer3...\n"
         if options.pause:
             raw_input("Press Enter to continue...")
-        os.system('''w3m ftp://selab.janelia.org/pub/software/hmmer3/CURRENT | grep -i linux | grep -i x86_64 | sed "s/ /\\t/g" | cut -f 1 > temp.txt''')
-        handle = open("temp.txt", "r")
-        files = handle.readlines()[0].strip()
-        handle.close()
-        os.system("rm temp.txt")
-        urllib.urlretrieve("ftp://selab.janelia.org/pub/software/hmmer3/CURRENT/"+files, files)
+#        os.system('''w3m ftp://selab.janelia.org/pub/software/hmmer3/CURRENT | grep -i linux | grep -i x86_64 | sed "s/ /\\t/g" | cut -f 1 > temp.txt''')
+#        handle = open("temp.txt", "r")
+#        files = handle.readlines()[0].strip()
+#        handle.close()
+#        os.system("rm temp.txt")
+        files = "hmmer-3.1b2-linux-intel-x86_64.tar.gz"
+        urllib.urlretrieve("http://eddylab.org/software/hmmer3/3.1b2/hmmer-3.1b2-linux-intel-x86_64.tar.gz", "hmmer-3.1b2-linux-intel-x86_64.tar.gz")
         os.system("tar -zxf "+files)
         hmmerdir = files.replace(".tar.gz","")
         os.chdir(hmmerdir)
