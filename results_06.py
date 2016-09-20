@@ -206,6 +206,22 @@ def get_useful_pfam(options):
     return useful_pfam
 
 
+def check_files(options, useful_pfam):
+    '''
+    Check required files for REPORT preparation.
+    '''
+    required_files = ["input_names.txt", "query.pfam", "without_annotations_goa.txt", "without_annotations_ec.txt"]
+    for file1 in required_files:
+        if not os.path.exists(options.outdir+file1):
+            print "File: "+file1+" missing. Exiting..."
+            sys.exit(1)
+    useful_pfam_checked = set()
+    for fam in useful_pfam:
+        if os.path.exists(options.outdir+fam.upper()+"/"+fam.upper()+".rdata") and os.path.exists(options.outdir+fam.upper()+"/infer-"+fam.lower()+".fx"):
+            useful_pfam_checked.add(fam)
+    return useful_pfam_checked
+
+
 def get_useful_pfam_func(options, useful_pfam):
     '''
     Loads the list of functions (according to GO) in each Protein Family
@@ -776,6 +792,7 @@ def _main():
     else:
         noannot_all = set()
     useful_pfam = get_useful_pfam(options)
+    useful_pfam = check_files(options, useful_pfam)
     useful_pfam_func = get_useful_pfam_func(options, useful_pfam)
     useful_pfam_query_prob = get_useful_pfam_query_prob(options, useful_pfam)
     query_len_pfam_prob = get_query_len_pfam_prob(options, useful_pfam_query_prob)

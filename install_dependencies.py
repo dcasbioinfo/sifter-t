@@ -219,11 +219,11 @@ def download_files(options):
     if options.pause:
         raw_input("Press Enter to continue...")
     if not os.path.exists("notung/Notung.jar") or options.force:
-        urllib.urlretrieve("http://lampetra.compbio.cs.cmu.edu/Notung/distributions/Notung-2.6.zip", "Notung-2.6.zip")
-        os.system("unzip -qq Notung-2.6.zip")
-        os.system("mv Notung-2.6 notung")
-        os.system("mv notung/Notung-2.6.jar notung/Notung.jar")
-        os.system("rm Notung-2.6.zip")
+        urllib.urlretrieve("http://lampetra.compbio.cs.cmu.edu/Notung/distributions/Notung-2.5.zip", "Notung-2.5.zip")
+        os.system("unzip -qq Notung-2.5.zip")
+        os.system("mv Notung-2.5 notung")
+        os.system("mv notung/Notung-2.5.jar notung/Notung.jar")
+        os.system("rm Notung-2.5.zip")
 
     #Hmmer
     if not check_hmmer3() or options.force:

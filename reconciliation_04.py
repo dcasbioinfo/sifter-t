@@ -122,6 +122,8 @@ def buid_species_tree(options, fam, desc_anc, anc_desc):
             i += 1
             if i > 5: 
                 print "Problem in Protein Family", fam, x
+                if os.path.exists(options.outdir+fam.upper()+"/"+fam.upper()+".nhx.notreconciled"):
+                    shutil.move(options.outdir+fam.upper()+"/"+fam.upper()+".nhx.notreconciled", options.outdir+fam.upper()+"/"+fam.upper()+".nhx")
                 break
         x = (all_nodes - past_sp)
     
@@ -152,20 +154,27 @@ def build_reconciled_tree(options):
             for _ in range(10):
                 print to_screen.pop(),
             print ""
-        os.system("java -jar "+options.stdir.replace(" ","\ ")+"notung/"       \
-                  "Notung.jar -s "+options.outdir.replace(" ","\ ")+""     \
-                  ""+fam.upper()+"/"+fam.upper()+".sptree -g "                 \
-                  ""+options.outdir.replace(" ","\ ")+fam.upper()+"/"          \
-                  ""+fam.upper()+".nhx --reconcile --speciestag nhx "          \
-                  "--treeoutput nhx --nolosses --usegenedir --silent")
-        shutil.move(options.outdir+fam.upper()+"/"+fam.upper()+".nhx",
-            options.outdir+fam.upper()+"/"+fam.upper()+".nhx.notreconciled")
+        try:
+            os.system("java -jar "+options.stdir.replace(" ","\ ")+"notung/"       \
+                      "Notung.jar -s "+options.outdir.replace(" ","\ ")+""     \
+                      ""+fam.upper()+"/"+fam.upper()+".sptree -g "                 \
+                      ""+options.outdir.replace(" ","\ ")+fam.upper()+"/"          \
+                      ""+fam.upper()+".nhx --reconcile --speciestag nhx "          \
+                      "--treeoutput nhx --nolosses --usegenedir --silent >> notung.log 1>&2")
+        except:
+            print "Error:", fam
+#        if os.path.exists(options.outdir+fam.upper()+"/"+fam.upper()+".nhx"):
+#            shutil.move(options.outdir+fam.upper()+"/"+fam.upper()+".nhx",
+#            options.outdir+fam.upper()+"/"+fam.upper()+".nhx.notreconciled")
         if os.path.exists(options.outdir+fam.upper()+"/"+fam.upper()+".nhx.reconciled.0"):
             shutil.move(options.outdir+fam.upper()+"/"+fam.upper()+".nhx.reconciled.0",
                 options.outdir+fam.upper()+"/"+fam.upper()+".nhx")
         elif os.path.exists(options.outdir+fam.upper()+"/"+fam.upper()+".nhx.reconciled"):
             shutil.move(options.outdir+fam.upper()+"/"+fam.upper()+".nhx.reconciled",
                 options.outdir+fam.upper()+"/"+fam.upper()+".nhx")
+        elif os.path.exists(options.outdir+fam.upper()+"/"+fam.upper()+".nhx.notreconciled"):
+            shutil.move(options.outdir+fam.upper()+"/"+fam.upper()+".nhx.notreconciled",
+            options.outdir+fam.upper()+"/"+fam.upper()+".nhx")
         q.task_done()
     return None
 
